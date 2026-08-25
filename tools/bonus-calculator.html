@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bonus Calculator — UtilityHub</title>
+  <meta name="description" content="Calculate your bonus amount and tax on bonus. Diwali bonus, performance bonus, joining bonus tax calculator.">
+  <meta name="keywords" content="bonus calculator, diwali bonus, performance bonus, bonus tax, joining bonus, bonus calculation, statutory bonus, utility tools, utilityhub">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5CYNY8GBN0"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-5CYNY8GBN0');</script>
+</head>
+<body>
+  <header class="header"><div class="container header-inner"><a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a><nav class="nav"><a href="/" class="nav-link">Tools</a><a href="/services.html" class="nav-link">Services</a><a href="/blog.html" class="nav-link">Blog</a><a href="/premium.html" class="nav-link">Premium</a></nav></div></header>
+  <div class="container tool-page">
+    <a href="/" class="back-link">← Home</a>
+    <h1>🎁 Bonus Calculator</h1>
+    <p class="tool-desc-top">Calculate your bonus amount, tax impact, and statutory bonus eligibility.</p>
+    <div class="calculator-card">
+      <div class="form-group"><label for="basic">Monthly Basic Salary</label><input type="number" id="basic" placeholder="e.g. 25000" min="0"></div>
+      <div class="form-row">
+        <div class="form-group"><label for="bonusType">Bonus Type</label><select id="bonusType"><option value="statutory">Statutory Bonus (Payment of Bonus Act)</option><option value="performance">Performance Bonus (% of CTC)</option><option value="fixed">Fixed Amount Bonus</option></select></div>
+        <div class="form-group"><label for="months">Months Worked This Year</label><input type="number" id="months" value="12" min="1" max="12"></div>
+      </div>
+      <div class="form-group" id="pctGroup"><label for="bonusPct">Bonus Percentage (of annual basic)</label><input type="number" id="bonusPct" value="8.33" step="0.01" min="0" max="20"></div>
+      <div class="form-group" id="fixedGroup" style="display:none;"><label for="bonusFixed">Fixed Bonus Amount</label><input type="number" id="bonusFixed" placeholder="e.g. 50000" min="0"></div>
+      <button class="btn-calc" onclick="calcBonus()">Calculate Bonus</button>
+      <div class="result-area" id="result">
+        <div class="result-highlight"><div class="result-row"><span class="result-label">Bonus Amount</span><span class="result-value" id="rBonus">—</span></div></div>
+        <div class="result-row"><span class="result-label">Tax on Bonus (30% slab)</span><span class="result-value" id="rTax">—</span></div>
+        <div class="result-row"><span class="result-label">Bonus After Tax</span><span class="result-value" id="rAfter">—</span></div>
+        <div class="result-row"><span class="result-label">Monthly Equivalent</span><span class="result-value" id="rMonthly">—</span></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.getElementById('bonusType').onchange=function(){
+      document.getElementById('pctGroup').style.display=this.value==='fixed'?'none':'block';
+      document.getElementById('fixedGroup').style.display=this.value==='fixed'?'block':'none';
+    };
+    function calcBonus() {
+      const basic=parseFloat(document.getElementById('basic').value);
+      const type=document.getElementById('bonusType').value;
+      const months=parseFloat(document.getElementById('months').value)||12;
+      if(!basic&&type!=='fixed'){alert('Enter basic salary');return;}
+      let bonus=0;
+      if(type==='statutory') {
+        const annualBasic=basic*12;
+        bonus=Math.min(annualBasic*0.0833,21000)*months/12;
+        // Min bonus: 8.33% of wages, max Rs 21000 for employees earning <=21000/month
+      } else if(type==='performance') {
+        const pct=parseFloat(document.getElementById('bonusPct').value)||8.33;
+        bonus=basic*12*pct/100*months/12;
+      } else {
+        bonus=parseFloat(document.getElementById('bonusFixed').value)||0;
+      }
+      const tax=bonus*0.30; // assumed 30% slab
+      const after=bonus-tax;
+      document.getElementById('rBonus').textContent=formatINR(bonus);
+      document.getElementById('rTax').textContent=formatINR(tax);
+      document.getElementById('rAfter').textContent=formatINR(after);
+      document.getElementById('rMonthly').textContent=formatINR(after/12);
+      showResult('result');
+    }
+  </script>
+  <script src="../js/currency.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

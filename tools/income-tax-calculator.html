@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Income Tax Calculator — UtilityHub</title>
+  <meta name="description" content="Calculate your income tax under old and new regimes. Compare both and see which saves you more. Free income tax calculator.">
+  <meta name="keywords" content="income tax calculator, tax calculator India, old vs new tax regime, tax saving, ITR calculator, income tax slabs, tax comparison, utility tools, utilityhub">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5CYNY8GBN0"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-5CYNY8GBN0');</script>
+</head>
+<body>
+  <header class="header"><div class="container header-inner"><a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a><nav class="nav"><a href="/" class="nav-link">Tools</a><a href="/services.html" class="nav-link">Services</a><a href="/blog.html" class="nav-link">Blog</a><a href="/premium.html" class="nav-link">Premium</a></nav></div></header>
+  <div class="container tool-page">
+    <a href="/" class="back-link">← Home</a>
+    <h1>🧾 Income Tax Calculator</h1>
+    <p class="tool-desc-top">Compare old vs new tax regime and see which saves you more tax.</p>
+    <div class="calculator-card">
+      <div class="form-group"><label for="income">Annual Income (Gross)</label><input type="number" id="income" placeholder="e.g. 1200000" min="0"></div>
+      <div class="form-group"><label for="deductions">Total Deductions (80C + 80D + HRA + others)</label><input type="number" id="deductions" placeholder="e.g. 150000" min="0" value="150000"></div>
+      <button class="btn-calc" onclick="calcTax()">Compare Tax Regimes</button>
+      <div class="result-area" id="result">
+        <div class="result-highlight"><div class="result-row"><span class="result-label">Better Regime</span><span class="result-value" id="rBetter">—</span></div></div>
+        <div class="result-row"><span class="result-label">New Regime Tax</span><span class="result-value" id="rNew">—</span></div>
+        <div class="result-row"><span class="result-label">Old Regime Tax</span><span class="result-value" id="rOld">—</span></div>
+        <div class="result-row"><span class="result-label">New Regime Take-Home</span><span class="result-value" id="rNewTake">—</span></div>
+        <div class="result-row"><span class="result-label">Old Regime Take-Home</span><span class="result-value" id="rOldTake">—</span></div>
+        <div class="result-row"><span class="result-label">Savings with Better Regime</span><span class="result-value" id="rSave">—</span></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function calcTax() {
+      const income=parseFloat(document.getElementById('income').value);
+      const deductions=parseFloat(document.getElementById('deductions').value)||0;
+      if(!income||income<0){alert('Enter valid income');return;}
+      // New regime FY 2025-26 slabs
+      const newSlabs=[[300000,0],[600000,5],[900000,10],[1200000,15],[1500000,20],[Infinity,30]];
+      // Old regime slabs
+      const oldSlabs=[[250000,0],[500000,5],[1000000,20],[Infinity,30]];
+      function calcTaxAmt(taxable,slabs){
+        let tax=0,prev=0;
+        for(const [limit,rate] of slabs){
+          if(taxable>limit) tax+=(limit-prev)*rate/100;
+          else { tax+=(taxable-prev)*rate/100; break; }
+          prev=limit;
+        }
+        return tax*1.04; // 4% cess
+      }
+      // New regime: standard deduction 75000, no other deductions
+      const newTaxable=Math.max(0,income-75000);
+      const newTax=calcTaxAmt(newTaxable,newSlabs);
+      // Old regime: standard deduction 50000 + other deductions
+      const oldTaxable=Math.max(0,income-50000-deductions);
+      const oldTax=calcTaxAmt(oldTaxable,oldSlabs);
+      const better=newTax<=oldTax?'New Regime ✅':'Old Regime ✅';
+      const savings=Math.abs(newTax-oldTax);
+      document.getElementById('rBetter').textContent=better;
+      document.getElementById('rNew').textContent=formatINR(newTax);
+      document.getElementById('rOld').textContent=formatINR(oldTax);
+      document.getElementById('rNewTake').textContent=formatINR(income-newTax);
+      document.getElementById('rOldTake').textContent=formatINR(income-oldTax);
+      document.getElementById('rSave').textContent=formatINR(savings);
+      showResult('result');
+    }
+  </script>
+  <script src="../js/currency.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

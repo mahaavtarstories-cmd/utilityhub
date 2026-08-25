@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CTC to In-Hand Calculator — UtilityHub</title>
+  <meta name="description" content="Convert your CTC to actual in-hand salary. See all deductions — PF, tax, professional tax, and net take-home pay.">
+  <meta name="keywords" content="CTC to in-hand calculator, take home salary, net salary calculator, CTC to net, salary deductions, PF deduction, tax deduction, utility tools, utilityhub">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5CYNY8GBN0"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-5CYNY8GBN0');</script>
+</head>
+<body>
+  <header class="header"><div class="container header-inner"><a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a><nav class="nav"><a href="/" class="nav-link">Tools</a><a href="/services.html" class="nav-link">Services</a><a href="/blog.html" class="nav-link">Blog</a><a href="/premium.html" class="nav-link">Premium</a></nav></div></header>
+  <div class="container tool-page">
+    <a href="/" class="back-link">← Home</a>
+    <h1>💼 CTC to In-Hand Calculator</h1>
+    <p class="tool-desc-top">Convert your CTC to actual monthly in-hand salary after all deductions.</p>
+    <div class="calculator-card">
+      <div class="form-group"><label for="ctc">Annual CTC</label><input type="number" id="ctc" placeholder="e.g. 800000" min="0"></div>
+      <div class="form-row">
+        <div class="form-group"><label for="basePct">Base Salary (% of CTC)</label><input type="number" id="basePct" value="40" min="10" max="80"></div>
+        <div class="form-group"><label for="hraPct">HRA (% of Base)</label><input type="number" id="hraPct" value="50" min="0" max="100"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label for="bonusPct">Bonus/Variable (% of CTC)</label><input type="number" id="bonusPct" value="10" min="0" max="30"></div>
+        <div class="form-group"><label for="cityType">City Type (for HRA exemption)</label><select id="cityType"><option value="metro">Metro (50% of basic)</option><option value="non-metro">Non-Metro (40% of basic)</option></select></div>
+      </div>
+      <button class="btn-calc" onclick="calcCTC2Inhand()">Calculate In-Hand</button>
+      <div class="result-area" id="result">
+        <div class="result-highlight"><div class="result-row"><span class="result-label">Monthly In-Hand</span><span class="result-value" id="rInhand">—</span></div></div>
+        <div class="result-row"><span class="result-label">Annual CTC</span><span class="result-value" id="rCTC">—</span></div>
+        <div class="result-row"><span class="result-label">Monthly Gross</span><span class="result-value" id="rGross">—</span></div>
+        <div class="result-row"><span class="result-label">Employee PF (12% of basic)</span><span class="result-value" id="rPF">—</span></div>
+        <div class="result-row"><span class="result-label">Professional Tax</span><span class="result-value" id="rPT">—</span></div>
+        <div class="result-row"><span class="result-label">Income Tax (monthly)</span><span class="result-value" id="rTax">—</span></div>
+        <div class="result-row"><span class="result-label">Total Deductions</span><span class="result-value" id="rDeduct">—</span></div>
+        <div class="result-row"><span class="result-label">Annual In-Hand</span><span class="result-value" id="rAnnualInhand">—</span></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function calcCTC2Inhand() {
+      const ctc=parseFloat(document.getElementById('ctc').value);
+      if(!ctc||ctc<0){alert('Enter valid CTC');return;}
+      const basePct=parseFloat(document.getElementById('basePct').value)||40;
+      const hraPct=parseFloat(document.getElementById('hraPct').value)||50;
+      const bonusPct=parseFloat(document.getElementById('bonusPct').value)||10;
+      const isMetro=document.getElementById('cityType').value==='metro';
+      const base=ctc*basePct/100;
+      const hra=base*hraPct/100;
+      const bonus=ctc*bonusPct/100;
+      const empPF=base*0.12;
+      const special=(ctc-base-hra-bonus-empPF)/12;
+      const monthlyGross=(base+hra+bonus)/12+special;
+      // HRA exemption
+      const hraExempt=Math.min(hra/12,isMetro?base*0.5/12:base*0.4/12,base/12*0.1);
+      // Taxable income
+      const taxable=base+hra-hraExempt*12+bonus+special*12-empPF*2-50000;
+      let tax=0;
+      const t=Math.max(0,taxable);
+      if(t>300000)tax+=Math.min(t-300000,300000)*0.05;
+      if(t>600000)tax+=Math.min(t-600000,300000)*0.10;
+      if(t>900000)tax+=Math.min(t-900000,300000)*0.15;
+      if(t>1200000)tax+=Math.min(t-1200000,300000)*0.20;
+      if(t>1500000)tax+=(t-1500000)*0.30;
+      tax*=1.04;
+      const monthlyTax=tax/12;
+      const pt=200; // professional tax
+      const totalDeduct=empPF/12+pt+monthlyTax;
+      const inhand=monthlyGross-totalDeduct;
+      document.getElementById('rInhand').textContent=formatINR(inhand);
+      document.getElementById('rCTC').textContent=formatINR(ctc);
+      document.getElementById('rGross').textContent=formatINR(monthlyGross);
+      document.getElementById('rPF').textContent=formatINR(empPF/12);
+      document.getElementById('rPT').textContent=formatINR(pt);
+      document.getElementById('rTax').textContent=formatINR(monthlyTax);
+      document.getElementById('rDeduct').textContent=formatINR(totalDeduct);
+      document.getElementById('rAnnualInhand').textContent=formatINR(inhand*12);
+      showResult('result');
+    }
+  </script>
+  <script src="../js/currency.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

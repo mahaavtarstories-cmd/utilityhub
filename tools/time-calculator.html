@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Time Calculator — UtilityHub</title>
+  <meta name="description" content="Add, subtract, and convert time. Calculate hours, minutes, seconds. Time duration and time math.">
+  <meta name="keywords" content="time calculator, add time, subtract time, time duration, hours calculator, minutes calculator, time math, utility tools, utilityhub">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5CYNY8GBN0"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-5CYNY8GBN0');</script>
+</head>
+<body>
+  <header class="header"><div class="container header-inner"><a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a><nav class="nav"><a href="/" class="nav-link">Tools</a><a href="/services.html" class="nav-link">Services</a><a href="/blog.html" class="nav-link">Blog</a><a href="/premium.html" class="nav-link">Premium</a></nav></div></header>
+  <div class="container tool-page">
+    <a href="/" class="back-link">← Home</a>
+    <h1>⏱️ Time Calculator</h1>
+    <p class="tool-desc-top">Add, subtract, and convert time — hours, minutes, seconds.</p>
+    <div class="calculator-card">
+      <div class="form-group"><label for="mode">Operation</label>
+        <select id="mode" onchange="switchMode()">
+          <option value="add">Add Times</option>
+          <option value="subtract">Subtract Times</option>
+          <option value="duration">Duration Between Two Times</option>
+          <option value="convert">Convert Time Units</option>
+        </select>
+      </div>
+
+      <!-- Add/Subtract -->
+      <div id="mode-add" class="time-mode">
+        <div class="form-row"><div class="form-group"><label>Time 1 — Hours</label><input type="number" id="h1" value="2" min="0"></div><div class="form-group"><label>Minutes</label><input type="number" id="m1" value="30" min="0" max="59"></div></div>
+        <div class="form-row"><div class="form-group"><label>Time 2 — Hours</label><input type="number" id="h2" value="1" min="0"></div><div class="form-group"><label>Minutes</label><input type="number" id="m2" value="45" min="0" max="59"></div></div>
+      </div>
+
+      <!-- Duration -->
+      <div id="mode-duration" class="time-mode" style="display:none;">
+        <div class="form-row"><div class="form-group"><label>Start Time</label><input type="time" id="startTime" value="09:00"></div><div class="form-group"><label>End Time</label><input type="time" id="endTime" value="17:30"></div></div>
+      </div>
+
+      <!-- Convert -->
+      <div id="mode-convert" class="time-mode" style="display:none;">
+        <div class="form-group"><label for="convValue">Value to Convert</label><input type="number" id="convValue" value="1" step="any"></div>
+        <div class="form-group"><label for="convFrom">From</label><select id="convFrom"><option value="hours">Hours</option><option value="minutes">Minutes</option><option value="seconds">Seconds</option><option value="days">Days</option><option value="weeks">Weeks</option><option value="ms">Milliseconds</option></select></div>
+      </div>
+
+      <button class="btn-calc" onclick="calcTime()">Calculate</button>
+      <div class="result-area" id="result">
+        <div class="result-highlight"><div class="result-row"><span class="result-label">Result</span><span class="result-value" id="rResult">—</span></div></div>
+        <div class="result-row"><span class="result-label">In Hours</span><span class="result-value" id="rHours">—</span></div>
+        <div class="result-row"><span class="result-label">In Minutes</span><span class="result-value" id="rMins">—</span></div>
+        <div class="result-row"><span class="result-label">In Seconds</span><span class="result-value" id="rSecs">—</span></div>
+        <div class="result-row"><span class="result-label">Formatted</span><span class="result-value" id="rFmt">—</span></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function switchMode(){
+      const mode=document.getElementById('mode').value;
+      document.querySelectorAll('.time-mode').forEach(t=>t.style.display='none');
+      if(mode==='add'||mode==='subtract')document.getElementById('mode-add').style.display='block';
+      else if(mode==='duration')document.getElementById('mode-duration').style.display='block';
+      else if(mode==='convert')document.getElementById('mode-convert').style.display='block';
+    }
+    function calcTime(){
+      const mode=document.getElementById('mode').value;
+      let totalSecs=0;
+      if(mode==='add'||mode==='subtract'){
+        const h1=parseFloat(document.getElementById('h1').value)||0;
+        const m1=parseFloat(document.getElementById('m1').value)||0;
+        const h2=parseFloat(document.getElementById('h2').value)||0;
+        const m2=parseFloat(document.getElementById('m2').value)||0;
+        const t1Secs=h1*3600+m1*60;
+        const t2Secs=h2*3600+m2*60;
+        totalSecs=mode==='add'?t1Secs+t2Secs:Math.max(0,t1Secs-t2Secs);
+      } else if(mode==='duration'){
+        const start=document.getElementById('startTime').value;
+        const end=document.getElementById('endTime').value;
+        if(!start||!end){alert('Enter both times');return;}
+        const [sh,sm]=start.split(':').map(Number);
+        const [eh,em]=end.split(':').map(Number);
+        totalSecs=(eh*3600+em*60)-(sh*3600+sm*60);
+        if(totalSecs<0)totalSecs+=86400; // next day
+      } else if(mode==='convert'){
+        const val=parseFloat(document.getElementById('convValue').value)||0;
+        const from=document.getElementById('convFrom').value;
+        const factors={hours:3600,minutes:60,seconds:1,days:86400,weeks:604800,ms:0.001};
+        totalSecs=val*factors[from];
+      }
+      const hours=totalSecs/3600;
+      const mins=totalSecs/60;
+      const h=Math.floor(totalSecs/3600);
+      const m=Math.floor((totalSecs%3600)/60);
+      const s=Math.floor(totalSecs%60);
+      document.getElementById('rResult').textContent=`${h}h ${m}m ${s}s`;
+      document.getElementById('rHours').textContent=hours.toFixed(2)+' hrs';
+      document.getElementById('rMins').textContent=mins.toFixed(0)+' min';
+      document.getElementById('rSecs').textContent=Math.round(totalSecs).toLocaleString()+' sec';
+      document.getElementById('rFmt').textContent=`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      showResult('result');
+    }
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

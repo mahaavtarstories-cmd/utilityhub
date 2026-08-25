@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HRA Calculator — UtilityHub</title>
+  <meta name="description" content="Calculate HRA exemption on your house rent allowance. Know how much HRA is tax-free under Income Tax rules.">
+  <meta name="keywords" content="HRA calculator, HRA exemption, house rent allowance, tax exemption on rent, HRA tax saving, rent exemption calculator, utility tools, utilityhub">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5CYNY8GBN0"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-5CYNY8GBN0');</script>
+</head>
+<body>
+  <header class="header"><div class="container header-inner"><a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a><nav class="nav"><a href="/" class="nav-link">Tools</a><a href="/services.html" class="nav-link">Services</a><a href="/blog.html" class="nav-link">Blog</a><a href="/premium.html" class="nav-link">Premium</a></nav></div></header>
+  <div class="container tool-page">
+    <a href="/" class="back-link">← Home</a>
+    <h1>🏠 HRA Calculator</h1>
+    <p class="tool-desc-top">Calculate your HRA exemption and tax savings on house rent allowance.</p>
+    <div class="calculator-card">
+      <div class="form-row">
+        <div class="form-group"><label for="basic">Monthly Basic Salary</label><input type="number" id="basic" placeholder="e.g. 25000" min="0"></div>
+        <div class="form-group"><label for="hra">Monthly HRA Received</label><input type="number" id="hra" placeholder="e.g. 12500" min="0"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label for="rent">Monthly Rent Paid</label><input type="number" id="rent" placeholder="e.g. 15000" min="0"></div>
+        <div class="form-group"><label for="city">City Type</label><select id="city"><option value="metro">Metro (Delhi, Mumbai, Kolkata, Chennai)</option><option value="non-metro">Non-Metro</option></select></div>
+      </div>
+      <button class="btn-calc" onclick="calcHRA()">Calculate HRA Exemption</button>
+      <div class="result-area" id="result">
+        <div class="result-highlight"><div class="result-row"><span class="result-label">HRA Exempt (Monthly)</span><span class="result-value" id="rExempt">—</span></div></div>
+        <div class="result-row"><span class="result-label">HRA Exempt (Annual)</span><span class="result-value" id="rExemptAnnual">—</span></div>
+        <div class="result-row"><span class="result-label">Taxable HRA (Monthly)</span><span class="result-value" id="rTaxable">—</span></div>
+        <div class="result-row"><span class="result-label">Tax Savings (Annual)</span><span class="result-value" id="rSave">—</span></div>
+        <div class="result-row"><span class="result-label">Least of 3 Rules</span><span class="result-value" id="rRule">—</span></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function calcHRA() {
+      const basic=parseFloat(document.getElementById('basic').value);
+      const hra=parseFloat(document.getElementById('hra').value);
+      const rent=parseFloat(document.getElementById('rent').value)||0;
+      const isMetro=document.getElementById('city').value==='metro';
+      if(!basic||!hra){alert('Enter basic and HRA');return;}
+      const rule1=hra; // actual HRA received
+      const rule2=rent-basic*0.1; // rent - 10% of basic
+      const rule3=isMetro?basic*0.5:basic*0.4; // 50%/40% of basic
+      const exemptMonthly=Math.max(0,Math.min(rule1,rule2,rule3));
+      const exemptAnnual=exemptMonthly*12;
+      const taxableMonthly=hra-exemptMonthly;
+      const taxSaving=exemptAnnual*0.2; // approx 20% tax bracket
+      const leastRule=exemptMonthly===rule1?'Actual HRA':exemptMonthly===rule2?'Rent - 10% Basic':'50%/40% of Basic';
+      document.getElementById('rExempt').textContent=formatINR(exemptMonthly);
+      document.getElementById('rExemptAnnual').textContent=formatINR(exemptAnnual);
+      document.getElementById('rTaxable').textContent=formatINR(Math.max(0,taxableMonthly));
+      document.getElementById('rSave').textContent=formatINR(taxSaving);
+      document.getElementById('rRule').textContent=leastRule;
+      showResult('result');
+    }
+  </script>
+  <script src="../js/currency.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

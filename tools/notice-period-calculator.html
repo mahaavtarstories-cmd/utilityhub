@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notice Period Calculator — UtilityHub</title>
+  <meta name="description" content="Calculate your last working day based on notice period. Account for leaves, weekends, and holidays during notice period.">
+  <meta name="keywords" content="notice period calculator, last working day, resignation date, notice period days, leave during notice period, garden leave, utility tools, utilityhub">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5CYNY8GBN0"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-5CYNY8GBN0');</script>
+</head>
+<body>
+  <header class="header"><div class="container header-inner"><a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a><nav class="nav"><a href="/" class="nav-link">Tools</a><a href="/services.html" class="nav-link">Services</a><a href="/blog.html" class="nav-link">Blog</a><a href="/premium.html" class="nav-link">Premium</a></nav></div></header>
+  <div class="container tool-page">
+    <a href="/" class="back-link">← Home</a>
+    <h1>📋 Notice Period Calculator</h1>
+    <p class="tool-desc-top">Calculate your last working day and notice period end date.</p>
+    <div class="calculator-card">
+      <div class="form-group"><label for="resignDate">Resignation Date</label><input type="date" id="resignDate"></div>
+      <div class="form-row">
+        <div class="form-group"><label for="noticeDays">Notice Period (days)</label><input type="number" id="noticeDays" value="60" min="0"></div>
+        <div class="form-group"><label for="leaveAdjust">Leaves to Adjust (days)</label><input type="number" id="leaveAdjust" value="0" min="0"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label for="skipWeekends">Skip Weekends?</label><select id="skipWeekends"><option value="no">No (count all days)</option><option value="yes">Yes (only working days)</option></select></div>
+        <div class="form-group"><label for="buyout">Notice Buyout Days</label><input type="number" id="buyout" value="0" min="0"></div>
+      </div>
+      <button class="btn-calc" onclick="calcNotice()">Calculate Last Working Day</button>
+      <div class="result-area" id="result">
+        <div class="result-highlight"><div class="result-row"><span class="result-label">Last Working Day</span><span class="result-value" id="rLWD">—</span></div></div>
+        <div class="result-row"><span class="result-label">Total Notice Days</span><span class="result-value" id="rTotal">—</span></div>
+        <div class="result-row"><span class="result-label">Days Served</span><span class="result-value" id="rServed">—</span></div>
+        <div class="result-row"><span class="result-label">Leave Adjusted</span><span class="result-value" id="rLeave">—</span></div>
+        <div class="result-row"><span class="result-label">Buyout Days</span><span class="result-value" id="rBuyout">—</span></div>
+        <div class="result-row"><span class="result-label">Actual Days to Serve</span><span class="result-value" id="rActual">—</span></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded',()=>{const t=new Date().toISOString().split('T')[0];document.getElementById('resignDate').value=t;});
+    function calcNotice() {
+      const resignStr=document.getElementById('resignDate').value;
+      if(!resignStr){alert('Select resignation date');return;}
+      const noticeDays=parseInt(document.getElementById('noticeDays').value)||0;
+      const leaveAdj=parseInt(document.getElementById('leaveAdjust').value)||0;
+      const buyout=parseInt(document.getElementById('buyout').value)||0;
+      const skipWeekends=document.getElementById('skipWeekends').value==='yes';
+      const actualDays=noticeDays-leaveAdj-buyout;
+      if(actualDays<=0){document.getElementById('rLWD').textContent='Already served!';showResult('result');return;}
+      const start=new Date(resignStr);
+      let count=0,date=new Date(start);
+      if(skipWeekends){
+        while(count<actualDays){date.setDate(date.getDate()+1);if(date.getDay()!==0&&date.getDay()!==6)count++;}
+      } else {
+        date.setDate(date.getDate()+actualDays);
+      }
+      const options={weekday:'long',year:'numeric',month:'long',day:'numeric'};
+      document.getElementById('rLWD').textContent=date.toLocaleDateString('en-IN',options);
+      document.getElementById('rTotal').textContent=noticeDays+' days';
+      document.getElementById('rServed').textContent=actualDays+' days';
+      document.getElementById('rLeave').textContent=leaveAdj+' days';
+      document.getElementById('rBuyout').textContent=buyout+' days';
+      document.getElementById('rActual').textContent=actualDays+' days';
+      showResult('result');
+    }
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

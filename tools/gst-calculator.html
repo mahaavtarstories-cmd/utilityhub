@@ -7,6 +7,15 @@
   <meta name="description" content="Free GST calculator. Add or remove GST at 5%, 12%, 18%, or 28% from any amount.">
   <link rel="stylesheet" href="../css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5CYNY8GBN0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-5CYNY8GBN0');
+</script>
+<meta name="keywords" content="GST calculator, VAT calculator, tax calculator, add GST, remove GST, GST inclusive, GST exclusive, CGST SGST, sales tax, utility tools, utilityhub">
 </head>
 <body>
   <header class="header">
@@ -28,12 +37,20 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label for="gstRate">GST Rate</label>
+          <label for="gstRate">Tax Rate (GST/VAT/SST)</label>
           <select id="gstRate">
-            <option value="5">5%</option>
-            <option value="12">12%</option>
-            <option value="18" selected>18%</option>
-            <option value="28">28%</option>
+            <option value="5">5% (India GST / Singapore GST / UAE VAT / Nigeria VAT)</option>
+            <option value="12">12% (India GST — standard)</option>
+            <option value="18" selected>18% (India GST — general)</option>
+            <option value="28">28% (India GST — luxury)</option>
+            <option value="7">7% (Singapore GST 2024)</option>
+            <option value="8">8% (Singapore GST 2024+)</option>
+            <option value="10">10% (Australia GST)</option>
+            <option value="15">15% (New Zealand GST / South Africa VAT)</option>
+            <option value="19">19% (Germany VAT)</option>
+            <option value="20">20% (UK VAT / France TVA)</option>
+            <option value="21">21% (Italy IVA)</option>
+            <option value="25">25% (Sweden Moms)</option>
             <option value="0">0% (Exempt)</option>
           </select>
         </div>
@@ -53,9 +70,8 @@
         </div>
         <div class="result-row"><span class="result-label">Base / Net Amount</span><span class="result-value" id="rBase">—</span></div>
         <div class="result-row"><span class="result-label">Total / Gross Amount</span><span class="result-value" id="rTotal">—</span></div>
-        <div class="result-row"><span class="result-label">CGST (50%)</span><span class="result-value" id="rCGST">—</span></div>
-        <div class="result-row"><span class="result-label">SGST (50%)</span><span class="result-value" id="rSGST">—</span></div>
-        <div class="result-row"><span class="result-label">IGST (Full)</span><span class="result-value" id="rIGST">—</span></div>
+        <div class="result-row"><span class="result-label">CGST + SGST (India) / VAT Split</span><span class="result-value" id="rCGST">—</span></div>
+        <div class="result-row"><span class="result-label">IGST / Full Tax</span><span class="result-value" id="rIGST">—</span></div>
       </div>
     </div>
   </div>
@@ -84,13 +100,13 @@
       document.getElementById('rGST').textContent = formatINR(gst);
       document.getElementById('rBase').textContent = formatINR(base);
       document.getElementById('rTotal').textContent = formatINR(total);
-      document.getElementById('rCGST').textContent = formatINR(cgst);
-      document.getElementById('rSGST').textContent = formatINR(sgst);
+      document.getElementById('rCGST').textContent = formatINR(cgst) + ' (50% each)';
       document.getElementById('rIGST').textContent = formatINR(gst);
       showResult('result');
     }
   </script>
   <script src="../js/monetization.js"></script>
+  <script src="../js/currency.js"></script>
   <script src="../js/app.js"></script>
 </body>
 </html>

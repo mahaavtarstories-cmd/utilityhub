@@ -1,7 +1,8 @@
 // Render tool cards by phase
 const grid1 = document.getElementById('toolsGrid1');
 const grid2 = document.getElementById('toolsGrid2');
-if (grid1 || grid2) {
+const grid3 = document.getElementById('toolsGrid3');
+if (grid1 || grid2 || grid3) {
   tools.forEach(t => {
     const card = document.createElement('a');
     card.className = 'tool-card';
@@ -14,6 +15,7 @@ if (grid1 || grid2) {
     `;
     if (t.phase === 1 && grid1) grid1.appendChild(card);
     else if (t.phase === 2 && grid2) grid2.appendChild(card);
+    else if (t.phase === 3 && grid3) grid3.appendChild(card);
   });
 }
 
@@ -26,9 +28,15 @@ function filterTools() {
   });
 }
 
-// Format currency (INR)
+// Format currency based on selected currency
+let currentCurrency = 'INR';
+const currencySymbols = { INR:'₹', USD:'$', EUR:'€', GBP:'£', AED:'AED', CAD:'C$', AUD:'A$', SGD:'S$', JPY:'¥', CNY:'¥', PKR:'₨', BDT:'৳', NPR:'₨', LKR:'₨', ZAR:'R', NGN:'₦', KES:'KSh', BRL:'R$', MXN:'$', MYR:'RM', PHP:'₱', IDR:'Rp', THB:'฿', VND:'₫', EGP:'E£', SAR:'﷼', QAR:'﷼', KWD:'د.ك', TRY:'₺', RUB:'₽' };
+const currencyLocales = { INR:'en-IN', USD:'en-US', EUR:'en-IE', GBP:'en-GB', AED:'en-AE', CAD:'en-CA', AUD:'en-AU', SGD:'en-SG', JPY:'ja-JP', CNY:'zh-CN', PKR:'ur-PK', BDT:'bn-BD', NPR:'ne-NP', LKR:'si-LK', ZAR:'en-ZA', NGN:'en-NG', KES:'sw-KE', BRL:'pt-BR', MXN:'es-MX', MYR:'ms-MY', PHP:'en-PH', IDR:'id-ID', THB:'th-TH', VND:'vi-VN', EGP:'ar-EG', SAR:'ar-SA', QAR:'ar-QA', KWD:'ar-KW', TRY:'tr-TR', RUB:'ru-RU' };
+
 function formatINR(num) {
-  return '₹' + new Intl.NumberFormat('en-IN').format(Math.round(num));
+  const sym = currencySymbols[currentCurrency] || '₹';
+  const loc = currencyLocales[currentCurrency] || 'en-IN';
+  return sym + new Intl.NumberFormat(loc).format(Math.round(num));
 }
 
 // Format number
@@ -52,6 +60,11 @@ function setResult(labelId, value) {
 // Load monetization script on non-premium pages
 if (typeof loadAdSense !== 'undefined') {
   loadAdSense();
+}
+
+// Inject homepage sponsored ads
+if (typeof injectHomepageAds !== 'undefined') {
+  injectHomepageAds();
 }
 
 // Inject ads on tool pages (not homepage, not premium page)
@@ -124,4 +137,34 @@ if (typeof loadAdSense !== 'undefined') {
   if (toolName && toolName !== 'index') {
     trackEvent('tool', 'visit', toolName);
   }
+})();
+
+// ===== Animated Stats Counter =====
+(function animateStats() {
+  const stats = [
+    { id: 'statTools', target: 25, suffix: '+' },
+    { id: 'statCurrencies', target: 30, suffix: '+' },
+    { id: 'statSignup', target: 0, suffix: '' },
+    { id: 'statCost', target: 0, suffix: '' },
+  ];
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        stats.forEach(s => {
+          const el = document.getElementById(s.id);
+          if (!el || el.dataset.animated) return;
+          el.dataset.animated = '1';
+          let current = 0;
+          const increment = Math.max(1, Math.ceil(s.target / 30));
+          const timer = setInterval(() => {
+            current += increment;
+            if (current >= s.target) { current = s.target; clearInterval(timer); }
+            el.textContent = current + s.suffix;
+          }, 40);
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+  const statsSection = document.querySelector('.stats-section');
+  if (statsSection) observer.observe(statsSection);
 })();

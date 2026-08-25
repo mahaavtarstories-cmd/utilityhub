@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Absent & Leave Salary Calculator — UtilityHub</title>
+  <meta name="description" content="Calculate salary deduction for absent days, paid leave balance, sick leave encashment, and leave without pay impact.">
+  <meta name="keywords" content="absent day calculator, leave salary calculator, salary deduction for absent, paid leave, sick leave, LWP calculation, leave encashment, utility tools, utilityhub">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5CYNY8GBN0"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-5CYNY8GBN0');</script>
+</head>
+<body>
+  <header class="header"><div class="container header-inner"><a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a><nav class="nav"><a href="/" class="nav-link">Tools</a><a href="/services.html" class="nav-link">Services</a><a href="/blog.html" class="nav-link">Blog</a><a href="/premium.html" class="nav-link">Premium</a></nav></div></header>
+  <div class="container tool-page">
+    <a href="/" class="back-link">← Home</a>
+    <h1>📅 Absent & Leave Calculator</h1>
+    <p class="tool-desc-top">Calculate salary impact for absent days, paid leave, sick leave, and leave without pay.</p>
+    <div class="calculator-card">
+      <div class="form-group"><label for="monthlySalary">Monthly Salary</label><input type="number" id="monthlySalary" placeholder="e.g. 40000" min="0"></div>
+      <div class="form-row">
+        <div class="form-group"><label for="workDays">Working Days in Month</label><input type="number" id="workDays" value="26" min="1" max="31"></div>
+        <div class="form-group"><label for="perDaySalary" disabled>Per Day Salary (auto)</label><input type="text" id="perDaySalary" disabled placeholder="auto"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label for="absentDays">Absent Days (unpaid)</label><input type="number" id="absentDays" value="0" min="0" max="31"></div>
+        <div class="form-group"><label for="paidLeave">Paid Leave Days Used</label><input type="number" id="paidLeave" value="0" min="0" max="31"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label for="sickLeave">Sick Leave Days Used</label><input type="number" id="sickLeave" value="0" min="0" max="31"></div>
+        <div class="form-group"><label for="lwpDays">Leave Without Pay Days</label><input type="number" id="lwpDays" value="0" min="0" max="31"></div>
+      </div>
+      <button class="btn-calc" onclick="calcLeave()">Calculate Salary Impact</button>
+      <div class="result-area" id="result">
+        <div class="result-highlight"><div class="result-row"><span class="result-label">Net Salary Payable</span><span class="result-value" id="rNet">—</span></div></div>
+        <div class="result-row"><span class="result-label">Per Day Salary</span><span class="result-value" id="rPerDay">—</span></div>
+        <div class="result-row"><span class="result-label">Absent Deduction</span><span class="result-value" id="rAbsentDeduct">—</span></div>
+        <div class="result-row"><span class="result-label">LWP Deduction</span><span class="result-value" id="rLWP">—</span></div>
+        <div class="result-row"><span class="result-label">Paid Leave (no deduction)</span><span class="result-value" id="rPaid">—</span></div>
+        <div class="result-row"><span class="result-label">Sick Leave (no deduction)</span><span class="result-value" id="rSick">—</span></div>
+        <div class="result-row"><span class="result-label">Total Deduction</span><span class="result-value" id="rTotalDeduct">—</span></div>
+        <div class="result-row"><span class="result-label">Days Paid For</span><span class="result-value" id="rDaysPaid">—</span></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.getElementById('monthlySalary').oninput=document.getElementById('workDays').oninput=function(){
+      const s=parseFloat(document.getElementById('monthlySalary').value)||0;
+      const d=parseFloat(document.getElementById('workDays').value)||26;
+      document.getElementById('perDaySalary').value=formatINR(s/d);
+    };
+    function calcLeave() {
+      const salary=parseFloat(document.getElementById('monthlySalary').value);
+      const workDays=parseFloat(document.getElementById('workDays').value)||26;
+      const absent=parseFloat(document.getElementById('absentDays').value)||0;
+      const paidLeave=parseFloat(document.getElementById('paidLeave').value)||0;
+      const sickLeave=parseFloat(document.getElementById('sickLeave').value)||0;
+      const lwp=parseFloat(document.getElementById('lwpDays').value)||0;
+      if(!salary){alert('Enter monthly salary');return;}
+      const perDay=salary/workDays;
+      const absentDeduct=perDay*absent;
+      const lwpDeduct=perDay*lwp;
+      const totalDeduct=absentDeduct+lwpDeduct;
+      const net=salary-totalDeduct;
+      const daysPaid=workDays-absent-lwp;
+      document.getElementById('rNet').textContent=formatINR(net);
+      document.getElementById('rPerDay').textContent=formatINR(perDay);
+      document.getElementById('rAbsentDeduct').textContent=formatINR(absentDeduct);
+      document.getElementById('rLWP').textContent=formatINR(lwpDeduct);
+      document.getElementById('rPaid').textContent=paidLeave+' days (₹'+formatINR(paidLeave*perDay)+')';
+      document.getElementById('rSick').textContent=sickLeave+' days (₹'+formatINR(sickLeave*perDay)+')';
+      document.getElementById('rTotalDeduct').textContent=formatINR(totalDeduct);
+      document.getElementById('rDaysPaid').textContent=daysPaid+' / '+workDays+' days';
+      showResult('result');
+    }
+  </script>
+  <script src="../js/currency.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

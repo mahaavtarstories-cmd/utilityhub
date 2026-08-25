@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Currency Converter — UtilityHub</title>
+  <meta name="description" content="Convert between 30+ world currencies with live exchange rates. USD, EUR, GBP, INR, AED, JPY, CNY and more.">
+  <meta name="keywords" content="currency converter, USD to INR, EUR to USD, exchange rate, live currency rates, forex calculator, money converter, utility tools, utilityhub">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5CYNY8GBN0"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-5CYNY8GBN0');</script>
+</head>
+<body>
+  <header class="header"><div class="container header-inner"><a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a><nav class="nav"><a href="/" class="nav-link">Tools</a><a href="/services.html" class="nav-link">Services</a><a href="/blog.html" class="nav-link">Blog</a><a href="/premium.html" class="nav-link">Premium</a></nav></div></header>
+  <div class="container tool-page">
+    <a href="/" class="back-link">← Home</a>
+    <h1>💱 Currency Converter</h1>
+    <p class="tool-desc-top">Convert between 30+ world currencies with live exchange rates.</p>
+    <div class="calculator-card">
+      <div class="form-row">
+        <div class="form-group"><label for="amount">Amount</label><input type="number" id="amount" placeholder="e.g. 100" min="0" oninput="convertCurrency()"></div>
+        <div class="form-group"><label for="fromCurrency">From</label><select id="fromCurrency"></select></div>
+      </div>
+      <div style="text-align:center;margin:8px 0;font-size:1.5rem;">⬇️</div>
+      <div class="form-row">
+        <div class="form-group"><label for="toCurrency">To</label><select id="toCurrency"></select></div>
+        <div class="form-group"><label for="result">Result</label><input type="text" id="resultDisplay" readonly placeholder="Result" style="font-weight:700;font-size:1.1rem;background:var(--bg);"></div>
+      </div>
+      <button class="btn-calc" onclick="convertCurrency()">Convert</button>
+      <div class="result-area" id="result">
+        <div class="result-highlight"><div class="result-row"><span class="result-label" id="rLabel">—</span><span class="result-value" id="rValue">—</span></div></div>
+        <div class="result-row"><span class="result-label">Exchange Rate</span><span class="result-value" id="rRate">—</span></div>
+        <div class="result-row"><span class="result-label">Inverse Rate</span><span class="result-value" id="rInverse">—</span></div>
+        <div class="result-row"><span class="result-label">Last Updated</span><span class="result-value" id="rUpdated">—</span></div>
+      </div>
+      <p style="margin-top:14px;font-size:.8rem;color:var(--text-muted);text-align:center;">Rates from open.er-api.com (updated hourly)</p>
+    </div>
+  </div>
+  <script>
+    const currencies=[
+      {code:'USD',name:'US Dollar',flag:'🇺🇸'},{code:'EUR',name:'Euro',flag:'🇪🇺'},{code:'GBP',name:'British Pound',flag:'🇬🇧'},
+      {code:'INR',name:'Indian Rupee',flag:'🇮🇳'},{code:'AED',name:'UAE Dirham',flag:'🇦🇪'},{code:'CAD',name:'Canadian Dollar',flag:'🇨🇦'},
+      {code:'AUD',name:'Australian Dollar',flag:'🇦🇺'},{code:'SGD',name:'Singapore Dollar',flag:'🇸🇬'},{code:'JPY',name:'Japanese Yen',flag:'🇯🇵'},
+      {code:'CNY',name:'Chinese Yuan',flag:'🇨🇳'},{code:'PKR',name:'Pakistani Rupee',flag:'🇵🇰'},{code:'BDT',name:'Bangladeshi Taka',flag:'🇧🇩'},
+      {code:'NPR',name:'Nepali Rupee',flag:'🇳🇵'},{code:'LKR',name:'Sri Lankan Rupee',flag:'🇱🇰'},{code:'ZAR',name:'South African Rand',flag:'🇿🇦'},
+      {code:'NGN',name:'Nigerian Naira',flag:'🇳🇬'},{code:'KES',name:'Kenyan Shilling',flag:'🇰🇪'},{code:'BRL',name:'Brazilian Real',flag:'🇧🇷'},
+      {code:'MXN',name:'Mexican Peso',flag:'🇲🇽'},{code:'MYR',name:'Malaysian Ringgit',flag:'🇲🇾'},{code:'PHP',name:'Philippine Peso',flag:'🇵🇭'},
+      {code:'IDR',name:'Indonesian Rupiah',flag:'🇮🇩'},{code:'THB',name:'Thai Baht',flag:'🇹🇭'},{code:'VND',name:'Vietnamese Dong',flag:'🇻🇳'},
+      {code:'EGP',name:'Egyptian Pound',flag:'🇪🇬'},{code:'SAR',name:'Saudi Riyal',flag:'🇸🇦'},{code:'QAR',name:'Qatari Riyal',flag:'🇶🇦'},
+      {code:'KWD',name:'Kuwaiti Dinar',flag:'🇰🇼'},{code:'TRY',name:'Turkish Lira',flag:'🇹🇷'},{code:'RUB',name:'Russian Ruble',flag:'🇷🇺'},
+    ];
+    const fromSel=document.getElementById('fromCurrency');
+    const toSel=document.getElementById('toCurrency');
+    currencies.forEach(c=>{
+      fromSel.add(new Option(`${c.flag} ${c.code} — ${c.name}`,c.code));
+      toSel.add(new Option(`${c.flag} ${c.code} — ${c.name}`,c.code));
+    });
+    fromSel.value='USD';toSel.value='INR';
+
+    async function convertCurrency(){
+      const amt=parseFloat(document.getElementById('amount').value);
+      if(!amt||amt<0){alert('Enter a valid amount');return;}
+      const from=fromSel.value;const to=toSel.value;
+      document.getElementById('rValue').textContent='Loading...';
+      try{
+        const res=await fetch(`https://open.er-api.com/v6/latest/${from}`);
+        const data=await res.json();
+        if(data.rates&&data.rates[to]){
+          const rate=data.rates[to];
+          const result=amt*rate;
+          const fromCur=currencies.find(c=>c.code===from);
+          const toCur=currencies.find(c=>c.code===to);
+          document.getElementById('resultDisplay').value=`${(result).toLocaleString(undefined,{maximumFractionDigits:2})} ${to}`;
+          document.getElementById('rLabel').textContent=`${fromCur.flag} ${amt} ${from} =`;
+          document.getElementById('rValue').textContent=`${toCur.flag} ${result.toLocaleString(undefined,{maximumFractionDigits:2})} ${to}`;
+          document.getElementById('rRate').textContent=`1 ${from} = ${rate.toFixed(4)} ${to}`;
+          document.getElementById('rInverse').textContent=`1 ${to} = ${(1/rate).toFixed(4)} ${from}`;
+          document.getElementById('rUpdated').textContent=data.time_last_update_utc?new Date(data.time_last_update_utc).toLocaleString():'N/A';
+          showResult('result');
+        }
+      }catch(e){
+        document.getElementById('rValue').textContent='Failed to fetch rates';
+        showResult('result');
+      }
+    }
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

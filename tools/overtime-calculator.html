@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Overtime Calculator — UtilityHub</title>
+  <meta name="description" content="Calculate overtime pay based on your hourly rate and extra hours worked. Know your overtime entitlement.">
+  <meta name="keywords" content="overtime calculator, OT pay, overtime rate, extra hours pay, overtime calculation, overtime pay rate, utility tools, utilityhub">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5CYNY8GBN0"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-5CYNY8GBN0');</script>
+</head>
+<body>
+  <header class="header"><div class="container header-inner"><a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a><nav class="nav"><a href="/" class="nav-link">Tools</a><a href="/services.html" class="nav-link">Services</a><a href="/blog.html" class="nav-link">Blog</a><a href="/premium.html" class="nav-link">Premium</a></nav></div></header>
+  <div class="container tool-page">
+    <a href="/" class="back-link">← Home</a>
+    <h1>⏰ Overtime Calculator</h1>
+    <p class="tool-desc-top">Calculate your overtime pay based on hourly rate and extra hours worked.</p>
+    <div class="calculator-card">
+      <div class="form-row">
+        <div class="form-group"><label for="monthlySalary">Monthly Salary</label><input type="number" id="monthlySalary" placeholder="e.g. 40000" min="0"></div>
+        <div class="form-group"><label for="workDays">Work Days Per Month</label><input type="number" id="workDays" value="26" min="1" max="31"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label for="dailyHours">Daily Work Hours</label><input type="number" id="dailyHours" value="8" min="1" max="24"></div>
+        <div class="form-group"><label for="otHours">Overtime Hours</label><input type="number" id="otHours" placeholder="e.g. 20" min="0"></div>
+      </div>
+      <div class="form-group"><label for="otRate">Overtime Rate</label><select id="otRate"><option value="1.5">1.5x (Standard)</option><option value="2">2x (Double)</option><option value="1">1x (Normal rate)</option><option value="2.5">2.5x (Holiday)</option></select></div>
+      <button class="btn-calc" onclick="calcOT()">Calculate Overtime</button>
+      <div class="result-area" id="result">
+        <div class="result-highlight"><div class="result-row"><span class="result-label">Overtime Pay</span><span class="result-value" id="rOTPay">—</span></div></div>
+        <div class="result-row"><span class="result-label">Hourly Rate</span><span class="result-value" id="rHourly">—</span></div>
+        <div class="result-row"><span class="result-label">OT Rate Per Hour</span><span class="result-value" id="rOTRate">—</span></div>
+        <div class="result-row"><span class="result-label">Total OT Hours</span><span class="result-value" id="rHours">—</span></div>
+        <div class="result-row"><span class="result-label">Monthly Salary + OT</span><span class="result-value" id="rTotal">—</span></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function calcOT() {
+      const salary=parseFloat(document.getElementById('monthlySalary').value);
+      const days=parseFloat(document.getElementById('workDays').value)||26;
+      const dailyHrs=parseFloat(document.getElementById('dailyHours').value)||8;
+      const otHrs=parseFloat(document.getElementById('otHours').value)||0;
+      const rateMult=parseFloat(document.getElementById('otRate').value);
+      if(!salary){alert('Enter monthly salary');return;}
+      const hourlyRate=salary/(days*dailyHrs);
+      const otPerHour=hourlyRate*rateMult;
+      const otPay=otHrs*otPerHour;
+      document.getElementById('rOTPay').textContent=formatINR(otPay);
+      document.getElementById('rHourly').textContent=formatINR(hourlyRate);
+      document.getElementById('rOTRate').textContent=formatINR(otPerHour);
+      document.getElementById('rHours').textContent=otHrs+' hours';
+      document.getElementById('rTotal').textContent=formatINR(salary+otPay);
+      showResult('result');
+    }
+  </script>
+  <script src="../js/currency.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

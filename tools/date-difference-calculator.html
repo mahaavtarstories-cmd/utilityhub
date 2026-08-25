@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Date Difference Calculator — UtilityHub</title>
+  <meta name="description" content="Calculate days, months, years between two dates. Find the exact duration between any two dates.">
+  <meta name="keywords" content="date difference calculator, days between dates, duration calculator, date range, how many days between, utility tools, utilityhub">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5CYNY8GBN0"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-5CYNY8GBN0');</script>
+</head>
+<body>
+  <header class="header"><div class="container header-inner"><a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a><nav class="nav"><a href="/" class="nav-link">Tools</a><a href="/services.html" class="nav-link">Services</a><a href="/blog.html" class="nav-link">Blog</a><a href="/premium.html" class="nav-link">Premium</a></nav></div></header>
+  <div class="container tool-page">
+    <a href="/" class="back-link">← Home</a>
+    <h1>📆 Date Difference Calculator</h1>
+    <p class="tool-desc-top">Calculate exact duration between two dates — days, weeks, months, years.</p>
+    <div class="calculator-card">
+      <div class="form-row">
+        <div class="form-group"><label for="date1">From Date</label><input type="date" id="date1"></div>
+        <div class="form-group"><label for="date2">To Date</label><input type="date" id="date2"></div>
+      </div>
+      <button class="btn-calc" onclick="calcDateDiff()">Calculate Difference</button>
+      <div class="result-area" id="result">
+        <div class="result-highlight"><div class="result-row"><span class="result-label">Total Difference</span><span class="result-value" id="rTotal">—</span></div></div>
+        <div class="result-row"><span class="result-label">In Years, Months, Days</span><span class="result-value" id="rYMD">—</span></div>
+        <div class="result-row"><span class="result-label">Total Days</span><span class="result-value" id="rDays">—</span></div>
+        <div class="result-row"><span class="result-label">Total Weeks</span><span class="result-value" id="rWeeks">—</span></div>
+        <div class="result-row"><span class="result-label">Total Months</span><span class="result-value" id="rMonths">—</span></div>
+        <div class="result-row"><span class="result-label">Total Hours</span><span class="result-value" id="rHours">—</span></div>
+        <div class="result-row"><span class="result-label">Business Days (Mon-Fri)</span><span class="result-value" id="rBiz">—</span></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded',()=>{
+      const today=new Date().toISOString().split('T')[0];
+      document.getElementById('date2').value=today;
+      const past=new Date();past.setFullYear(past.getFullYear()-1);
+      document.getElementById('date1').value=past.toISOString().split('T')[0];
+    });
+    function calcDateDiff(){
+      const d1=new Date(document.getElementById('date1').value);
+      const d2=new Date(document.getElementById('date2').value);
+      if(isNaN(d1)||isNaN(d2)){alert('Select both dates');return;}
+      if(d1>d2){alert('From date must be before To date');return;}
+      const totalMs=d2-d1;
+      const totalDays=Math.floor(totalMs/86400000);
+      let years=d2.getFullYear()-d1.getFullYear();
+      let months=d2.getMonth()-d1.getMonth();
+      let days=d2.getDate()-d1.getDate();
+      if(days<0){months--;const prev=new Date(d2.getFullYear(),d2.getMonth(),0);days+=prev.getDate();}
+      if(months<0){years--;months+=12;}
+      const totalWeeks=Math.floor(totalDays/7);
+      const totalMonths=years*12+months;
+      const totalHours=totalDays*24;
+      let bizDays=0;let temp=new Date(d1);
+      while(temp<d2){temp.setDate(temp.getDate()+1);if(temp.getDay()!==0&&temp.getDay()!==6)bizDays++;}
+      document.getElementById('rTotal').textContent=`${years}y ${months}m ${days}d`;
+      document.getElementById('rYMD').textContent=`${years} years, ${months} months, ${days} days`;
+      document.getElementById('rDays').textContent=totalDays.toLocaleString()+' days';
+      document.getElementById('rWeeks').textContent=totalWeeks.toLocaleString()+' weeks';
+      document.getElementById('rMonths').textContent=totalMonths+' months';
+      document.getElementById('rHours').textContent=totalHours.toLocaleString()+' hours';
+      document.getElementById('rBiz').textContent=bizDays+' days';
+      showResult('result');
+    }
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

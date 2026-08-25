@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>In-Hand to CTC Calculator — UtilityHub</title>
+  <meta name="description" content="Convert your monthly in-hand salary to CTC. Reverse calculate your cost to company from take-home pay.">
+  <meta name="keywords" content="in-hand to CTC calculator, take home to CTC, reverse salary calculator, net to gross salary, CTC from take home, utility tools, utilityhub">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5CYNY8GBN0"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-5CYNY8GBN0');</script>
+</head>
+<body>
+  <header class="header"><div class="container header-inner"><a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a><nav class="nav"><a href="/" class="nav-link">Tools</a><a href="/services.html" class="nav-link">Services</a><a href="/blog.html" class="nav-link">Blog</a><a href="/premium.html" class="nav-link">Premium</a></nav></div></header>
+  <div class="container tool-page">
+    <a href="/" class="back-link">← Home</a>
+    <h1>🔄 In-Hand to CTC Calculator</h1>
+    <p class="tool-desc-top">Find out what CTC you need to get your desired monthly in-hand salary.</p>
+    <div class="calculator-card">
+      <div class="form-group"><label for="inhand">Desired Monthly In-Hand</label><input type="number" id="inhand" placeholder="e.g. 60000" min="0"></div>
+      <div class="form-row">
+        <div class="form-group"><label for="basePct">Base Salary (% of CTC)</label><input type="number" id="basePct" value="40" min="10" max="80"></div>
+        <div class="form-group"><label for="bonusPct">Bonus/Variable (% of CTC)</label><input type="number" id="bonusPct" value="10" min="0" max="30"></div>
+      </div>
+      <button class="btn-calc" onclick="calcInhand2CTC()">Calculate CTC</button>
+      <div class="result-area" id="result">
+        <div class="result-highlight"><div class="result-row"><span class="result-label">Required Annual CTC</span><span class="result-value" id="rCTC">—</span></div></div>
+        <div class="result-row"><span class="result-label">Monthly In-Hand</span><span class="result-value" id="rInhand">—</span></div>
+        <div class="result-row"><span class="result-label">Annual In-Hand</span><span class="result-value" id="rAnnual">—</span></div>
+        <div class="result-row"><span class="result-label">Monthly Gross</span><span class="result-value" id="rGross">—</span></div>
+        <div class="result-row"><span class="result-label">Monthly Deductions</span><span class="result-value" id="rDeduct">—</span></div>
+        <div class="result-row"><span class="result-label">Employer PF (annual)</span><span class="result-value" id="rEmpPF">—</span></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function calcInhand2CTC() {
+      const desiredInhand=parseFloat(document.getElementById('inhand').value);
+      if(!desiredInhand||desiredInhand<0){alert('Enter valid in-hand amount');return;}
+      const basePct=parseFloat(document.getElementById('basePct').value)||40;
+      const bonusPct=parseFloat(document.getElementById('bonusPct').value)||10;
+      // Estimate: CTC ≈ inhand * 12 / (1 - totalDeductionRate)
+      // Iterate to find CTC
+      let ctc=desiredInhand*12*1.4; // start estimate
+      for(let iter=0;iter<20;iter++){
+        const base=ctc*basePct/100;
+        const hra=base*0.5;
+        const bonus=ctc*bonusPct/100;
+        const empPF=base*0.12;
+        const special=(ctc-base-hra-bonus-empPF)/12;
+        const monthlyGross=(base+hra+bonus)/12+special;
+        const taxable=base+hra*0.6+bonus+special*12-empPF*2-50000;
+        let tax=0;const t=Math.max(0,taxable);
+        if(t>300000)tax+=Math.min(t-300000,300000)*0.05;
+        if(t>600000)tax+=Math.min(t-600000,300000)*0.10;
+        if(t>900000)tax+=Math.min(t-900000,300000)*0.15;
+        if(t>1200000)tax+=Math.min(t-1200000,300000)*0.20;
+        if(t>1500000)tax+=(t-1500000)*0.30;
+        tax*=1.04;
+        const totalDeduct=empPF/12+200+tax/12;
+        const calcInhand=monthlyGross-totalDeduct;
+        const diff=desiredInhand-calcInhand;
+        if(Math.abs(diff)<1)break;
+        ctc+=diff*12*1.05;
+      }
+      const base=ctc*basePct/100;
+      const hra=base*0.5;
+      const bonus=ctc*bonusPct/100;
+      const empPF=base*0.12;
+      const special=(ctc-base-hra-bonus-empPF)/12;
+      const monthlyGross=(base+hra+bonus)/12+special;
+      const taxable=base+hra*0.6+bonus+special*12-empPF*2-50000;
+      let tax=0;const t=Math.max(0,taxable);
+      if(t>300000)tax+=Math.min(t-300000,300000)*0.05;
+      if(t>600000)tax+=Math.min(t-600000,300000)*0.10;
+      if(t>900000)tax+=Math.min(t-900000,300000)*0.15;
+      if(t>1200000)tax+=Math.min(t-1200000,300000)*0.20;
+      if(t>1500000)tax+=(t-1500000)*0.30;
+      tax*=1.04;
+      const totalDeduct=empPF/12+200+tax/12;
+      document.getElementById('rCTC').textContent=formatINR(ctc);
+      document.getElementById('rInhand').textContent=formatINR(desiredInhand);
+      document.getElementById('rAnnual').textContent=formatINR(desiredInhand*12);
+      document.getElementById('rGross').textContent=formatINR(monthlyGross);
+      document.getElementById('rDeduct').textContent=formatINR(totalDeduct);
+      document.getElementById('rEmpPF').textContent=formatINR(empPF);
+      showResult('result');
+    }
+  </script>
+  <script src="../js/currency.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>
