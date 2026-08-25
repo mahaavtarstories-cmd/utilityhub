@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Age Calculator — UtilityHub</title>
+  <meta name="description" content="Free age calculator. Calculate exact age in years, months, days, and total days.">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a>
+      <nav class="nav"><a href="/" class="nav-link">All Tools</a></nav>
+    </div>
+  </header>
+
+  <div class="container tool-page">
+    <a href="/" class="back-link">← All Tools</a>
+    <h1>🎂 Age Calculator</h1>
+    <p class="tool-desc-top">Calculate exact age in years, months, days, and total days lived.</p>
+
+    <div class="calculator-card">
+      <div class="form-group">
+        <label for="dob">Date of Birth</label>
+        <input type="date" id="dob">
+      </div>
+      <div class="form-group">
+        <label for="targetDate">Calculate Age On</label>
+        <input type="date" id="targetDate">
+      </div>
+      <button class="btn-calc" onclick="calcAge()">Calculate Age</button>
+
+      <div class="result-area" id="result">
+        <div class="result-highlight">
+          <div class="result-row"><span class="result-label">Your Age</span><span class="result-value" id="rAge">—</span></div>
+        </div>
+        <div class="result-row"><span class="result-label">In Months</span><span class="result-value" id="rMonths">—</span></div>
+        <div class="result-row"><span class="result-label">In Weeks</span><span class="result-value" id="rWeeks">—</span></div>
+        <div class="result-row"><span class="result-label">In Days</span><span class="result-value" id="rDays">—</span></div>
+        <div class="result-row"><span class="result-label">In Hours (approx)</span><span class="result-value" id="rHours">—</span></div>
+        <div class="result-row"><span class="result-label">Next Birthday In</span><span class="result-value" id="rNextBday">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Set today as default target
+    document.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('targetDate').value = today;
+    });
+
+    function calcAge() {
+      const dobStr = document.getElementById('dob').value;
+      const targetStr = document.getElementById('targetDate').value;
+      if (!dobStr) { alert('Enter your date of birth'); return; }
+
+      const dob = new Date(dobStr);
+      const target = targetStr ? new Date(targetStr) : new Date();
+
+      if (dob > target) { alert('Date of birth cannot be after the target date'); return; }
+
+      let years = target.getFullYear() - dob.getFullYear();
+      let months = target.getMonth() - dob.getMonth();
+      let days = target.getDate() - dob.getDate();
+
+      if (days < 0) {
+        months--;
+        const prevMonth = new Date(target.getFullYear(), target.getMonth(), 0);
+        days += prevMonth.getDate();
+      }
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+
+      const totalDays = Math.floor((target - dob) / 86400000);
+      const totalMonths = years * 12 + months;
+      const totalWeeks = Math.floor(totalDays / 7);
+      const totalHours = totalDays * 24;
+
+      // Next birthday
+      let nextBday = new Date(target.getFullYear(), dob.getMonth(), dob.getDate());
+      if (nextBday < target) nextBday = new Date(target.getFullYear() + 1, dob.getMonth(), dob.getDate());
+      const bdayDays = Math.ceil((nextBday - target) / 86400000);
+
+      document.getElementById('rAge').textContent = `${years} years, ${months} months, ${days} days`;
+      document.getElementById('rMonths').textContent = totalMonths + ' months';
+      document.getElementById('rWeeks').textContent = totalWeeks.toLocaleString() + ' weeks';
+      document.getElementById('rDays').textContent = totalDays.toLocaleString() + ' days';
+      document.getElementById('rHours').textContent = totalHours.toLocaleString() + ' hours';
+      document.getElementById('rNextBday').textContent = bdayDays + ' days (' + nextBday.toLocaleDateString('en-IN', {day:'numeric',month:'long',year:'numeric'}) + ')';
+      showResult('result');
+    }
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

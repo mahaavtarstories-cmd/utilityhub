@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salary Calculator — UtilityHub</title>
+  <meta name="description" content="Free salary calculator. Convert annual salary to monthly, weekly, daily, hourly pay.">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a>
+      <nav class="nav"><a href="/" class="nav-link">All Tools</a></nav>
+    </div>
+  </header>
+
+  <div class="container tool-page">
+    <a href="/" class="back-link">← All Tools</a>
+    <h1>💰 Salary Calculator</h1>
+    <p class="tool-desc-top">Convert your annual salary into monthly, weekly, daily, and hourly pay.</p>
+
+    <div class="calculator-card">
+      <div class="form-group">
+        <label for="annualSalary">Annual Salary (₹)</label>
+        <input type="number" id="annualSalary" placeholder="e.g. 600000" min="0">
+      </div>
+      <div class="form-group">
+        <label for="workHours">Work Hours Per Week</label>
+        <input type="number" id="workHours" placeholder="e.g. 40" value="40" min="1" max="168">
+      </div>
+      <div class="form-group">
+        <label for="workDays">Work Days Per Week</label>
+        <input type="number" id="workDays" placeholder="e.g. 5" value="5" min="1" max="7">
+      </div>
+      <button class="btn-calc" onclick="calcSalary()">Calculate</button>
+
+      <div class="result-area" id="result">
+        <div class="result-highlight">
+          <div class="result-row"><span class="result-label">Monthly Salary</span><span class="result-value" id="rMonthly">—</span></div>
+        </div>
+        <div class="result-row"><span class="result-label">Annual Salary</span><span class="result-value" id="rAnnual">—</span></div>
+        <div class="result-row"><span class="result-label">Weekly Salary</span><span class="result-value" id="rWeekly">—</span></div>
+        <div class="result-row"><span class="result-label">Daily Salary</span><span class="result-value" id="rDaily">—</span></div>
+        <div class="result-row"><span class="result-label">Hourly Rate</span><span class="result-value" id="rHourly">—</span></div>
+        <div class="result-row"><span class="result-label">Monthly Take-Home (approx)</span><span class="result-value" id="rTakeHome">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calcSalary() {
+      const annual = parseFloat(document.getElementById('annualSalary').value);
+      if (!annual || annual < 0) { alert('Enter a valid annual salary'); return; }
+      const hours = parseFloat(document.getElementById('workHours').value) || 40;
+      const days = parseFloat(document.getElementById('workDays').value) || 5;
+
+      const monthly = annual / 12;
+      const weekly = annual / 52;
+      const daily = weekly / days;
+      const hourly = weekly / hours;
+
+      // Rough tax estimate (old regime slabs)
+      let tax = 0;
+      if (annual > 250000) tax += Math.min(annual - 250000, 250000) * 0.05;
+      if (annual > 500000) tax += Math.min(annual - 500000, 500000) * 0.10;
+      if (annual > 1000000) tax += Math.min(annual - 1000000, 500000) * 0.15;
+      if (annual > 1500000) tax += Math.min(annual - 1500000, 500000) * 0.20;
+      if (annual > 2000000) tax += (annual - 2000000) * 0.30;
+      // 4% cess
+      tax *= 1.04;
+      const takeHome = (annual - tax) / 12;
+
+      document.getElementById('rMonthly').textContent = formatINR(monthly);
+      document.getElementById('rAnnual').textContent = formatINR(annual);
+      document.getElementById('rWeekly').textContent = formatINR(weekly);
+      document.getElementById('rDaily').textContent = formatINR(daily);
+      document.getElementById('rHourly').textContent = formatINR(hourly);
+      document.getElementById('rTakeHome').textContent = formatINR(takeHome) + ' (after approx tax)';
+      showResult('result');
+    }
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

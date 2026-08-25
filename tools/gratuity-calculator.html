@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gratuity Calculator — UtilityHub</title>
+  <meta name="description" content="Free gratuity calculator. Calculate gratuity amount based on salary and years of service.">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a>
+      <nav class="nav"><a href="/" class="nav-link">All Tools</a></nav>
+    </div>
+  </header>
+
+  <div class="container tool-page">
+    <a href="/" class="back-link">← All Tools</a>
+    <h1>🎁 Gratuity Calculator</h1>
+    <p class="tool-desc-top">Calculate your gratuity entitlement under the Payment of Gratuity Act, 1972.</p>
+
+    <div class="calculator-card">
+      <div class="form-group">
+        <label for="lastSalary">Last Drawn Salary (Basic + DA, monthly ₹)</label>
+        <input type="number" id="lastSalary" placeholder="e.g. 40000" min="0">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="serviceYears">Years of Service</label>
+          <input type="number" id="serviceYears" placeholder="e.g. 12" min="0" step="any">
+        </div>
+        <div class="form-group">
+          <label for="covered">Covered Under Gratuity Act?</label>
+          <select id="covered">
+            <option value="yes">Yes (10+ employees)</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-calc" onclick="calcGratuity()">Calculate Gratuity</button>
+
+      <div class="result-area" id="result">
+        <div class="result-highlight">
+          <div class="result-row"><span class="result-label">Gratuity Amount</span><span class="result-value" id="rGratuity">—</span></div>
+        </div>
+        <div class="result-row"><span class="result-label">Eligible Service</span><span class="result-value" id="rService">—</span></div>
+        <div class="result-row"><span class="result-label">15 Days Salary Per Year</span><span class="result-value" id="r15Days">—</span></div>
+        <div class="result-row"><span class="result-label">Tax-Free Limit</span><span class="result-value">₹20,00,000</span></div>
+        <div class="result-row"><span class="result-label">Taxable Amount (if any)</span><span class="result-value" id="rTaxable">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calcGratuity() {
+      const salary = parseFloat(document.getElementById('lastSalary').value);
+      const years = parseFloat(document.getElementById('serviceYears').value);
+      const covered = document.getElementById('covered').value === 'yes';
+      if (!salary || !years || salary < 0 || years < 0) { alert('Enter valid values'); return; }
+
+      // For covered employees: 15/26 * salary * years (26 = working days in a month)
+      // For non-covered: 15/30 * salary * years
+      // Minimum 5 years required (6 months+ rounds up to 1 year for covered)
+      let eligibleYears = years;
+      let gratuity = 0;
+
+      if (years < 5) {
+        gratuity = 0;
+        eligibleYears = 'Not eligible (min 5 years)';
+      } else {
+        // Round up partial years (6+ months = 1 full year) for covered
+        if (covered) {
+          const fullYears = Math.floor(years);
+          const partialMonths = (years - fullYears) * 12;
+          if (partialMonths >= 6) eligibleYears = fullYears + 1;
+          else eligibleYears = fullYears;
+          gratuity = (15 / 26) * salary * eligibleYears;
+        } else {
+          gratuity = (15 / 30) * salary * years;
+        }
+      }
+
+      const taxFree = 2000000;
+      const taxable = Math.max(0, gratuity - taxFree);
+      const r15Days = salary * 15 / 26;
+
+      document.getElementById('rGratuity').textContent = formatINR(gratuity);
+      document.getElementById('rService').textContent = typeof eligibleYears === 'number' ? eligibleYears + ' years' : eligibleYears;
+      document.getElementById('r15Days').textContent = formatINR(r15Days);
+      document.getElementById('rTaxable').textContent = formatINR(taxable);
+      showResult('result');
+    }
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

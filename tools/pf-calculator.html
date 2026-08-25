@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PF Calculator — UtilityHub</title>
+  <meta name="description" content="Free Provident Fund calculator. Estimate your EPF balance at retirement with compound interest.">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a>
+      <nav class="nav"><a href="/" class="nav-link">All Tools</a></nav>
+    </div>
+  </header>
+
+  <div class="container tool-page">
+    <a href="/" class="back-link">← All Tools</a>
+    <h1>🏢 PF Calculator</h1>
+    <p class="tool-desc-top">Estimate your EPF balance at retirement with employee + employer contributions and compound interest.</p>
+
+    <div class="calculator-card">
+      <div class="form-group">
+        <label for="salary">Monthly Basic Salary (₹)</label>
+        <input type="number" id="salary" placeholder="e.g. 25000" min="0">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="age">Current Age</label>
+          <input type="number" id="age" placeholder="e.g. 30" min="18" max="60">
+        </div>
+        <div class="form-group">
+          <label for="retireAge">Retirement Age</label>
+          <input type="number" id="retireAge" value="60" min="50" max="70">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="rate">Expected Interest Rate (%/year)</label>
+          <input type="number" id="rate" value="8.25" step="0.01" min="0">
+        </div>
+        <div class="form-group">
+          <label for="hike">Annual Salary Hike (%)</label>
+          <input type="number" id="hike" value="5" step="0.1" min="0">
+        </div>
+      </div>
+      <button class="btn-calc" onclick="calcPF()">Calculate PF</button>
+
+      <div class="result-area" id="result">
+        <div class="result-highlight">
+          <div class="result-row"><span class="result-label">Estimated PF at Retirement</span><span class="result-value" id="rTotal">—</span></div>
+        </div>
+        <div class="result-row"><span class="result-label">Total Employee Contribution</span><span class="result-value" id="rEmp">—</span></div>
+        <div class="result-row"><span class="result-label">Total Employer Contribution</span><span class="result-value" id="rEr">—</span></div>
+        <div class="result-row"><span class="result-label">Total Interest Earned</span><span class="result-value" id="rInterest">—</span></div>
+        <div class="result-row"><span class="result-label">Years to Retirement</span><span class="result-value" id="rYears">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calcPF() {
+      let salary = parseFloat(document.getElementById('salary').value);
+      const age = parseInt(document.getElementById('age').value);
+      const retireAge = parseInt(document.getElementById('retireAge').value);
+      const rate = parseFloat(document.getElementById('rate').value);
+      const hike = parseFloat(document.getElementById('hike').value);
+      if (!salary || !age || !rate || age < 18 || retireAge <= age) { alert('Enter valid values'); return; }
+
+      const years = retireAge - age;
+      const monthlyRate = rate / 12 / 100;
+      let empContribution = 0, erContribution = 0, balance = 0;
+
+      for (let y = 0; y < years; y++) {
+        for (let m = 0; m < 12; m++) {
+          const emp = salary * 0.12;       // employee 12%
+          const er = salary * 0.0367;      // employer 3.67% (of 12% employer share, 8.33% goes to pension)
+          balance = (balance + emp + er) * (1 + monthlyRate);
+          empContribution += emp;
+          erContribution += er;
+        }
+        salary *= (1 + hike / 100);
+      }
+
+      const totalContribution = empContribution + erContribution;
+      const interest = balance - totalContribution;
+
+      document.getElementById('rTotal').textContent = formatINR(balance);
+      document.getElementById('rEmp').textContent = formatINR(empContribution);
+      document.getElementById('rEr').textContent = formatINR(erContribution);
+      document.getElementById('rInterest').textContent = formatINR(interest);
+      document.getElementById('rYears').textContent = years + ' years';
+      showResult('result');
+    }
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

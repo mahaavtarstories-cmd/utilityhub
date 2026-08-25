@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GST Calculator — UtilityHub</title>
+  <meta name="description" content="Free GST calculator. Add or remove GST at 5%, 12%, 18%, or 28% from any amount.">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a>
+      <nav class="nav"><a href="/" class="nav-link">All Tools</a></nav>
+    </div>
+  </header>
+
+  <div class="container tool-page">
+    <a href="/" class="back-link">← All Tools</a>
+    <h1>🧮 GST Calculator</h1>
+    <p class="tool-desc-top">Add or remove GST from any amount with India's GST slabs.</p>
+
+    <div class="calculator-card">
+      <div class="form-group">
+        <label for="amount">Amount (₹)</label>
+        <input type="number" id="amount" placeholder="e.g. 1000" min="0">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="gstRate">GST Rate</label>
+          <select id="gstRate">
+            <option value="5">5%</option>
+            <option value="12">12%</option>
+            <option value="18" selected>18%</option>
+            <option value="28">28%</option>
+            <option value="0">0% (Exempt)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="mode">Operation</label>
+          <select id="mode">
+            <option value="add">Add GST (Exclusive → Inclusive)</option>
+            <option value="remove">Remove GST (Inclusive → Exclusive)</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-calc" onclick="calcGST()">Calculate</button>
+
+      <div class="result-area" id="result">
+        <div class="result-highlight">
+          <div class="result-row"><span class="result-label">GST Amount</span><span class="result-value" id="rGST">—</span></div>
+        </div>
+        <div class="result-row"><span class="result-label">Base / Net Amount</span><span class="result-value" id="rBase">—</span></div>
+        <div class="result-row"><span class="result-label">Total / Gross Amount</span><span class="result-value" id="rTotal">—</span></div>
+        <div class="result-row"><span class="result-label">CGST (50%)</span><span class="result-value" id="rCGST">—</span></div>
+        <div class="result-row"><span class="result-label">SGST (50%)</span><span class="result-value" id="rSGST">—</span></div>
+        <div class="result-row"><span class="result-label">IGST (Full)</span><span class="result-value" id="rIGST">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calcGST() {
+      const amt = parseFloat(document.getElementById('amount').value);
+      if (!amt || amt < 0) { alert('Enter a valid amount'); return; }
+      const rate = parseFloat(document.getElementById('gstRate').value);
+      const mode = document.getElementById('mode').value;
+
+      let base, gst, total;
+      if (mode === 'add') {
+        base = amt;
+        gst = amt * rate / 100;
+        total = amt + gst;
+      } else {
+        total = amt;
+        base = amt / (1 + rate / 100);
+        gst = amt - base;
+      }
+
+      const cgst = gst / 2;
+      const sgst = gst / 2;
+
+      document.getElementById('rGST').textContent = formatINR(gst);
+      document.getElementById('rBase').textContent = formatINR(base);
+      document.getElementById('rTotal').textContent = formatINR(total);
+      document.getElementById('rCGST').textContent = formatINR(cgst);
+      document.getElementById('rSGST').textContent = formatINR(sgst);
+      document.getElementById('rIGST').textContent = formatINR(gst);
+      showResult('result');
+    }
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

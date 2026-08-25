@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unit Converter — UtilityHub</title>
+  <meta name="description" content="Free unit converter. Convert length, weight, temperature, area, volume, speed, and more.">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a>
+      <nav class="nav"><a href="/" class="nav-link">All Tools</a></nav>
+    </div>
+  </header>
+
+  <div class="container tool-page">
+    <a href="/" class="back-link">← All Tools</a>
+    <h1>📏 Unit Converter</h1>
+    <p class="tool-desc-top">Convert between units for length, weight, temperature, area, volume, and speed.</p>
+
+    <div class="calculator-card">
+      <div class="form-group">
+        <label for="category">Category</label>
+        <select id="category" onchange="updateUnits()">
+          <option value="length">Length</option>
+          <option value="weight">Weight</option>
+          <option value="temperature">Temperature</option>
+          <option value="area">Area</option>
+          <option value="volume">Volume</option>
+          <option value="speed">Speed</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="fromUnit">From</label>
+          <select id="fromUnit"></select>
+        </div>
+        <div class="form-group">
+          <label for="toUnit">To</label>
+          <select id="toUnit"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputVal">Value</label>
+        <input type="number" id="inputVal" placeholder="Enter value" step="any" oninput="convert()">
+      </div>
+      <button class="btn-calc" onclick="convert()">Convert</button>
+
+      <div class="result-area" id="result">
+        <div class="result-highlight">
+          <div class="result-row"><span class="result-label">Result</span><span class="result-value" id="rResult">—</span></div>
+        </div>
+        <div class="result-row"><span class="result-label">Formula</span><span class="result-value" id="rFormula">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const unitData = {
+      length: {
+        units: { 'Millimeter':0.001, 'Centimeter':0.01, 'Meter':1, 'Kilometer':1000, 'Inch':0.0254, 'Foot':0.3048, 'Yard':0.9144, 'Mile':1609.344, 'Nautical Mile':1852 },
+        base: 'Meter'
+      },
+      weight: {
+        units: { 'Milligram':0.001, 'Gram':1, 'Kilogram':1000, 'Tonne':1000000, 'Ounce':28.3495, 'Pound':453.592, 'Stone':6350.29 },
+        base: 'Gram'
+      },
+      temperature: {
+        units: { 'Celsius':'C', 'Fahrenheit':'F', 'Kelvin':'K' },
+        base: null
+      },
+      area: {
+        units: { 'Sq Millimeter':0.000001, 'Sq Centimeter':0.0001, 'Sq Meter':1, 'Sq Kilometer':1000000, 'Sq Inch':0.00064516, 'Sq Foot':0.092903, 'Sq Yard':0.836127, 'Acre':4046.86, 'Hectare':10000 },
+        base: 'Sq Meter'
+      },
+      volume: {
+        units: { 'Milliliter':0.001, 'Liter':1, 'Cubic Meter':1000, 'Cubic Inch':0.0163871, 'Cubic Foot':28.3168, 'Gallon (US)':3.78541, 'Gallon (UK)':4.54609, 'Cup (US)':0.236588, 'Pint (US)':0.473176 },
+        base: 'Liter'
+      },
+      speed: {
+        units: { 'm/s':1, 'km/h':0.277778, 'mph':0.44704, 'knot':0.514444, 'ft/s':0.3048 },
+        base: 'm/s'
+      }
+    };
+
+    function updateUnits() {
+      const cat = document.getElementById('category').value;
+      const units = Object.keys(unitData[cat].units);
+      const fromSel = document.getElementById('fromUnit');
+      const toSel = document.getElementById('toUnit');
+      fromSel.innerHTML = '';
+      toSel.innerHTML = '';
+      units.forEach(u => {
+        fromSel.add(new Option(u, u));
+        toSel.add(new Option(u, u));
+      });
+      // Set sensible defaults
+      if (cat === 'length') { fromSel.value = 'Meter'; toSel.value = 'Foot'; }
+      else if (cat === 'weight') { fromSel.value = 'Kilogram'; toSel.value = 'Pound'; }
+      else if (cat === 'temperature') { fromSel.value = 'Celsius'; toSel.value = 'Fahrenheit'; }
+      else if (cat === 'area') { fromSel.value = 'Sq Meter'; toSel.value = 'Sq Foot'; }
+      else if (cat === 'volume') { fromSel.value = 'Liter'; toSel.value = 'Gallon (US)'; }
+      else if (cat === 'speed') { fromSel.value = 'km/h'; toSel.value = 'mph'; }
+    }
+
+    function convert() {
+      const cat = document.getElementById('category').value;
+      const fromU = document.getElementById('fromUnit').value;
+      const toU = document.getElementById('toUnit').value;
+      const val = parseFloat(document.getElementById('inputVal').value);
+      if (isNaN(val)) { alert('Enter a value'); return; }
+
+      let result, formula;
+
+      if (cat === 'temperature') {
+        // Convert to Celsius first
+        let celsius;
+        if (fromU === 'Celsius') celsius = val;
+        else if (fromU === 'Fahrenheit') celsius = (val - 32) * 5/9;
+        else if (fromU === 'Kelvin') celsius = val - 273.15;
+        // Convert from Celsius to target
+        if (toU === 'Celsius') result = celsius;
+        else if (toU === 'Fahrenheit') result = celsius * 9/5 + 32;
+        else if (toU === 'Kelvin') result = celsius + 273.15;
+        formula = `${fromU} → ${toU}`;
+      } else {
+        const data = unitData[cat];
+        const fromFactor = data.units[fromU];
+        const toFactor = data.units[toU];
+        const inBase = val * fromFactor;
+        result = inBase / toFactor;
+        formula = `${val} ${fromU} = ${result.toFixed(6)} ${toU}`;
+      }
+
+      const resultStr = result % 1 === 0 ? result.toLocaleString() : formatNum(result, 6);
+      document.getElementById('rResult').textContent = resultStr + ' ' + toU;
+      document.getElementById('rFormula').textContent = formula;
+      showResult('result');
+    }
+
+    // Initialize
+    updateUnits();
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

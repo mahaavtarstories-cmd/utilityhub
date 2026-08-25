@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIP Calculator — UtilityHub</title>
+  <meta name="description" content="Free SIP calculator. Estimate returns on your monthly mutual fund SIP investments.">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a>
+      <nav class="nav"><a href="/" class="nav-link">All Tools</a></nav>
+    </div>
+  </header>
+
+  <div class="container tool-page">
+    <a href="/" class="back-link">← All Tools</a>
+    <h1>📈 SIP Calculator</h1>
+    <p class="tool-desc-top">Estimate the future value of your monthly Systematic Investment Plan.</p>
+
+    <div class="calculator-card">
+      <div class="form-group">
+        <label for="monthlySIP">Monthly Investment (₹)</label>
+        <input type="number" id="monthlySIP" placeholder="e.g. 5000" min="0">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="expectedReturn">Expected Return (% per year)</label>
+          <input type="number" id="expectedReturn" placeholder="e.g. 12" step="0.1" min="0">
+        </div>
+        <div class="form-group">
+          <label for="years">Investment Period (years)</label>
+          <input type="number" id="years" placeholder="e.g. 10" min="1">
+        </div>
+      </div>
+      <button class="btn-calc" onclick="calcSIP()">Calculate Returns</button>
+
+      <div class="result-area" id="result">
+        <div class="result-highlight">
+          <div class="result-row"><span class="result-label">Expected Amount</span><span class="result-value" id="rFuture">—</span></div>
+        </div>
+        <div class="result-row"><span class="result-label">Total Invested</span><span class="result-value" id="rInvested">—</span></div>
+        <div class="result-row"><span class="result-label">Estimated Returns</span><span class="result-value" id="rReturns">—</span></div>
+        <div class="result-row"><span class="result-label">Wealth Gain</span><span class="result-value" id="rGain">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calcSIP() {
+      const monthly = parseFloat(document.getElementById('monthlySIP').value);
+      const rate = parseFloat(document.getElementById('expectedReturn').value);
+      const years = parseFloat(document.getElementById('years').value);
+      if (!monthly || !rate || !years || monthly < 0 || rate < 0 || years < 1) {
+        alert('Enter valid values'); return;
+      }
+
+      const n = years * 12;
+      const i = rate / 12 / 100;
+      const futureValue = monthly * ((Math.pow(1 + i, n) - 1) / i) * (1 + i);
+      const invested = monthly * n;
+      const returns = futureValue - invested;
+
+      document.getElementById('rFuture').textContent = formatINR(futureValue);
+      document.getElementById('rInvested').textContent = formatINR(invested);
+      document.getElementById('rReturns').textContent = formatINR(returns);
+      document.getElementById('rGain').textContent = (returns / invested * 100).toFixed(1) + '%';
+      showResult('result');
+    }
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

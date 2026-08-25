@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Percentage Calculator — UtilityHub</title>
+  <meta name="description" content="Free percentage calculator. Calculate percentage of, increase, decrease, difference, and more.">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a>
+      <nav class="nav"><a href="/" class="nav-link">All Tools</a></nav>
+    </div>
+  </header>
+
+  <div class="container tool-page">
+    <a href="/" class="back-link">← All Tools</a>
+    <h1>％ Percentage Calculator</h1>
+    <p class="tool-desc-top">All percentage operations in one place — of, increase, decrease, difference, ratio.</p>
+
+    <div class="calculator-card">
+      <!-- Mode 1: X% of Y -->
+      <h3 style="margin-bottom:14px;font-size:1rem;">What is X% of Y?</h3>
+      <div class="form-row">
+        <div class="form-group"><label for="p1x">Percentage (X)</label><input type="number" id="p1x" placeholder="e.g. 15" step="any"></div>
+        <div class="form-group"><label for="p1y">Value (Y)</label><input type="number" id="p1y" placeholder="e.g. 200" step="any"></div>
+      </div>
+      <button class="btn-calc" onclick="calcP1()">Calculate</button>
+      <div class="result-area" id="r1" style="margin-top:14px;padding:16px;">
+        <div class="result-row"><span class="result-label">Result</span><span class="result-value" id="r1Val">—</span></div>
+      </div>
+
+      <hr style="margin:24px 0;border:none;border-top:1px solid var(--border)">
+
+      <!-- Mode 2: X is what % of Y -->
+      <h3 style="margin-bottom:14px;font-size:1rem;">X is what percentage of Y?</h3>
+      <div class="form-row">
+        <div class="form-group"><label for="p2x">Value (X)</label><input type="number" id="p2x" placeholder="e.g. 30" step="any"></div>
+        <div class="form-group"><label for="p2y">Total (Y)</label><input type="number" id="p2y" placeholder="e.g. 150" step="any"></div>
+      </div>
+      <button class="btn-calc" onclick="calcP2()">Calculate</button>
+      <div class="result-area" id="r2" style="margin-top:14px;padding:16px;">
+        <div class="result-row"><span class="result-label">Result</span><span class="result-value" id="r2Val">—</span></div>
+      </div>
+
+      <hr style="margin:24px 0;border:none;border-top:1px solid var(--border)">
+
+      <!-- Mode 3: Percentage increase/decrease -->
+      <h3 style="margin-bottom:14px;font-size:1rem;">Percentage Change (From → To)</h3>
+      <div class="form-row">
+        <div class="form-group"><label for="p3from">From</label><input type="number" id="p3from" placeholder="e.g. 100" step="any"></div>
+        <div class="form-group"><label for="p3to">To</label><input type="number" id="p3to" placeholder="e.g. 125" step="any"></div>
+      </div>
+      <button class="btn-calc" onclick="calcP3()">Calculate</button>
+      <div class="result-area" id="r3" style="margin-top:14px;padding:16px;">
+        <div class="result-row"><span class="result-label">Change</span><span class="result-value" id="r3Val">—</span></div>
+        <div class="result-row"><span class="result-label">Direction</span><span class="result-value" id="r3Dir">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calcP1() {
+      const x = parseFloat(document.getElementById('p1x').value);
+      const y = parseFloat(document.getElementById('p1y').value);
+      if (isNaN(x) || isNaN(y)) { alert('Enter both values'); return; }
+      document.getElementById('r1Val').textContent = formatNum(x * y / 100);
+      showResult('r1');
+    }
+    function calcP2() {
+      const x = parseFloat(document.getElementById('p2x').value);
+      const y = parseFloat(document.getElementById('p2y').value);
+      if (isNaN(x) || isNaN(y) || y === 0) { alert('Enter valid values (Y ≠ 0)'); return; }
+      document.getElementById('r2Val').textContent = formatNum(x / y * 100) + '%';
+      showResult('r2');
+    }
+    function calcP3() {
+      const from = parseFloat(document.getElementById('p3from').value);
+      const to = parseFloat(document.getElementById('p3to').value);
+      if (isNaN(from) || isNaN(to) || from === 0) { alert('Enter valid values (From ≠ 0)'); return; }
+      const change = ((to - from) / Math.abs(from)) * 100;
+      document.getElementById('r3Val').textContent = formatNum(Math.abs(change)) + '%';
+      document.getElementById('r3Dir').textContent = change >= 0 ? '📈 Increase' : '📉 Decrease';
+      showResult('r3');
+    }
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

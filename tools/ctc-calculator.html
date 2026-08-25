@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CTC Calculator — UtilityHub</title>
+  <meta name="description" content="Free CTC calculator. Break down your Cost to Company into base, HRA, allowances, bonus, and deductions.">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a>
+      <nav class="nav"><a href="/" class="nav-link">All Tools</a></nav>
+    </div>
+  </header>
+
+  <div class="container tool-page">
+    <a href="/" class="back-link">← All Tools</a>
+    <h1>📊 CTC Calculator</h1>
+    <p class="tool-desc-top">Break down your Cost to Company into components — base, HRA, allowances, bonus, PF, and take-home.</p>
+
+    <div class="calculator-card">
+      <div class="form-group">
+        <label for="ctc">Annual CTC (₹)</label>
+        <input type="number" id="ctc" placeholder="e.g. 800000" min="0">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="basePct">Base Salary (% of CTC)</label>
+          <input type="number" id="basePct" value="40" min="10" max="80">
+        </div>
+        <div class="form-group">
+          <label for="hraPct">HRA (% of Base)</label>
+          <input type="number" id="hraPct" value="50" min="0" max="100">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="bonusPct">Bonus / Variable (% of CTC)</label>
+          <input type="number" id="bonusPct" value="10" min="0" max="30">
+        </div>
+        <div class="form-group">
+          <label for="pfPct">Employer PF (% of Base)</label>
+          <input type="number" id="pfPct" value="12" min="0" max="12">
+        </div>
+      </div>
+      <button class="btn-calc" onclick="calcCTC()">Calculate Breakdown</button>
+
+      <div class="result-area" id="result">
+        <div class="result-highlight">
+          <div class="result-row"><span class="result-label">Monthly Take-Home</span><span class="result-value" id="rTakeHome">—</span></div>
+        </div>
+        <div class="result-row"><span class="result-label">Annual CTC</span><span class="result-value" id="rCTC">—</span></div>
+        <div class="result-row"><span class="result-label">Base Salary (Annual)</span><span class="result-value" id="rBase">—</span></div>
+        <div class="result-row"><span class="result-label">HRA (Annual)</span><span class="result-value" id="rHRA">—</span></div>
+        <div class="result-row"><span class="result-label">Special Allowance (Annual)</span><span class="result-value" id="rSpl">—</span></div>
+        <div class="result-row"><span class="result-label">Bonus / Variable (Annual)</span><span class="result-value" id="rBonus">—</span></div>
+        <div class="result-row"><span class="result-label">Employer PF (Annual)</span><span class="result-value" id="rEmpPF">—</span></div>
+        <div class="result-row"><span class="result-label">Employee PF (Annual)</span><span class="result-value" id="rEmplyeePF">—</span></div>
+        <div class="result-row"><span class="result-label">Gross Monthly</span><span class="result-value" id="rGross">—</span></div>
+        <div class="result-row"><span class="result-label">Monthly Deductions (PF + Tax)</span><span class="result-value" id="rDeduct">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calcCTC() {
+      const ctc = parseFloat(document.getElementById('ctc').value);
+      if (!ctc || ctc < 0) { alert('Enter a valid CTC'); return; }
+      const basePct = parseFloat(document.getElementById('basePct').value) || 40;
+      const hraPct = parseFloat(document.getElementById('hraPct').value) || 50;
+      const bonusPct = parseFloat(document.getElementById('bonusPct').value) || 10;
+      const pfPct = parseFloat(document.getElementById('pfPct').value) || 12;
+
+      const base = ctc * basePct / 100;
+      const hra = base * hraPct / 100;
+      const bonus = ctc * bonusPct / 100;
+      const empPF = base * pfPct / 100;
+      const totalFixed = base + hra + empPF + bonus;
+      const spl = ctc - totalFixed;
+      const employeePF = base * (pfPct) / 100; // employee also pays same %
+
+      const grossMonthly = (base + hra + spl + bonus) / 12;
+      const monthlyPF = employeePF / 12;
+
+      // Rough tax
+      const taxable = base + hra * 0.3 + bonus; // approximate taxable
+      let tax = 0;
+      const t = taxable;
+      if (t > 250000) tax += Math.min(t - 250000, 250000) * 0.05;
+      if (t > 500000) tax += Math.min(t - 500000, 500000) * 0.10;
+      if (t > 1000000) tax += Math.min(t - 1000000, 500000) * 0.15;
+      if (t > 1500000) tax += Math.min(t - 1500000, 500000) * 0.20;
+      if (t > 2000000) tax += (t - 2000000) * 0.30;
+      tax *= 1.04;
+      const monthlyTax = tax / 12;
+      const takeHome = grossMonthly - monthlyPF - monthlyTax;
+
+      document.getElementById('rTakeHome').textContent = formatINR(takeHome);
+      document.getElementById('rCTC').textContent = formatINR(ctc);
+      document.getElementById('rBase').textContent = formatINR(base);
+      document.getElementById('rHRA').textContent = formatINR(hra);
+      document.getElementById('rSpl').textContent = formatINR(spl);
+      document.getElementById('rBonus').textContent = formatINR(bonus);
+      document.getElementById('rEmpPF').textContent = formatINR(empPF);
+      document.getElementById('rEmplyeePF').textContent = formatINR(employeePF);
+      document.getElementById('rGross').textContent = formatINR(grossMonthly);
+      document.getElementById('rDeduct').textContent = formatINR(monthlyPF + monthlyTax);
+      showResult('result');
+    }
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

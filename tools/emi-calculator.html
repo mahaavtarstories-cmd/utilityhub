@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EMI Calculator — UtilityHub</title>
+  <meta name="description" content="Free EMI calculator. Calculate monthly EMI, total interest, and total payment for any loan.">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a>
+      <nav class="nav"><a href="/" class="nav-link">All Tools</a></nav>
+    </div>
+  </header>
+
+  <div class="container tool-page">
+    <a href="/" class="back-link">← All Tools</a>
+    <h1>🏦 EMI Calculator</h1>
+    <p class="tool-desc-top">Calculate monthly EMI, total interest, and full payment breakdown for any loan.</p>
+
+    <div class="calculator-card">
+      <div class="form-group">
+        <label for="loanAmt">Loan Amount (₹)</label>
+        <input type="number" id="loanAmt" placeholder="e.g. 500000" min="0">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="rate">Interest Rate (% per year)</label>
+          <input type="number" id="rate" placeholder="e.g. 8.5" step="0.01" min="0">
+        </div>
+        <div class="form-group">
+          <label for="tenure">Tenure (months)</label>
+          <input type="number" id="tenure" placeholder="e.g. 60" min="1">
+        </div>
+      </div>
+      <button class="btn-calc" onclick="calcEMI()">Calculate EMI</button>
+
+      <div class="result-area" id="result">
+        <div class="result-highlight">
+          <div class="result-row"><span class="result-label">Monthly EMI</span><span class="result-value" id="rEMI">—</span></div>
+        </div>
+        <div class="result-row"><span class="result-label">Principal Amount</span><span class="result-value" id="rPrincipal">—</span></div>
+        <div class="result-row"><span class="result-label">Total Interest</span><span class="result-value" id="rInterest">—</span></div>
+        <div class="result-row"><span class="result-label">Total Payment</span><span class="result-value" id="rTotal">—</span></div>
+        <div class="result-row"><span class="result-label">Interest / Principal Ratio</span><span class="result-value" id="rRatio">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calcEMI() {
+      const P = parseFloat(document.getElementById('loanAmt').value);
+      const r = parseFloat(document.getElementById('rate').value);
+      const n = parseFloat(document.getElementById('tenure').value);
+      if (!P || !r || !n || P < 0 || r < 0 || n < 1) { alert('Enter valid loan details'); return; }
+
+      const monthlyRate = r / 12 / 100;
+      let emi;
+      if (monthlyRate === 0) {
+        emi = P / n;
+      } else {
+        emi = P * monthlyRate * Math.pow(1 + monthlyRate, n) / (Math.pow(1 + monthlyRate, n) - 1);
+      }
+      const totalPayment = emi * n;
+      const totalInterest = totalPayment - P;
+
+      document.getElementById('rEMI').textContent = formatINR(emi);
+      document.getElementById('rPrincipal').textContent = formatINR(P);
+      document.getElementById('rInterest').textContent = formatINR(totalInterest);
+      document.getElementById('rTotal').textContent = formatINR(totalPayment);
+      document.getElementById('rRatio').textContent = (totalInterest / P * 100).toFixed(1) + '%';
+      showResult('result');
+    }
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>
