@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Tools — UtilityHub</title>
+  <meta name="description" content="Free image tools — resize, compress, convert, crop, rotate, add watermark. All in your browser.">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a>
+      <nav class="nav"><a href="/" class="nav-link">All Tools</a></nav>
+    </div>
+  </header>
+
+  <div class="container tool-page">
+    <a href="/" class="back-link">← All Tools</a>
+    <h1>🖼️ Image Tools</h1>
+    <p class="tool-desc-top">Resize, compress, convert, crop, rotate, and watermark images — all in your browser.</p>
+
+    <div class="calculator-card">
+      <div class="tabs" style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;">
+        <button class="tab-btn active" onclick="switchTab('resize',event)" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--primary);color:#fff;cursor:pointer;font-size:.9rem;">Resize</button>
+        <button class="tab-btn" onclick="switchTab('compress',event)" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);cursor:pointer;font-size:.9rem;">Compress</button>
+        <button class="tab-btn" onclick="switchTab('convert',event)" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);cursor:pointer;font-size:.9rem;">Convert</button>
+        <button class="tab-btn" onclick="switchTab('crop',event)" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);cursor:pointer;font-size:.9rem;">Crop & Rotate</button>
+        <button class="tab-btn" onclick="switchTab('watermark',event)" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);cursor:pointer;font-size:.9rem;">Watermark</button>
+      </div>
+
+      <!-- Common file input -->
+      <div class="form-group">
+        <label for="imgFile" style="display:block;padding:20px;border:2px dashed var(--border);border-radius:10px;text-align:center;cursor:pointer;color:var(--text-muted);">
+          📁 Select an image (JPG, PNG, WebP, GIF)
+          <input type="file" id="imgFile" accept="image/*" style="display:none;" onchange="loadImage()">
+        </label>
+      </div>
+      <div id="imgPreview" style="margin-bottom:16px;display:none;">
+        <p style="font-size:.85rem;margin-bottom:8px;">Preview: <span id="imgInfo" style="color:var(--text-muted);"></span></p>
+        <img id="previewImg" style="max-width:100%;max-height:300px;border-radius:8px;border:1px solid var(--border);">
+      </div>
+
+      <!-- RESIZE -->
+      <div id="tab-resize" class="tab-content">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="resizeW">Width (px)</label>
+            <input type="number" id="resizeW" placeholder="e.g. 800" min="1">
+          </div>
+          <div class="form-group">
+            <label for="resizeH">Height (px)</label>
+            <input type="number" id="resizeH" placeholder="e.g. 600" min="1">
+          </div>
+        </div>
+        <div class="form-group">
+          <label><input type="checkbox" id="keepRatio" checked onchange="toggleRatio()"> Keep aspect ratio</label>
+        </div>
+        <button class="btn-calc" onclick="resizeImage()">Resize & Download</button>
+      </div>
+
+      <!-- COMPRESS -->
+      <div id="tab-compress" class="tab-content" style="display:none;">
+        <div class="form-group">
+          <label for="compressQ">Quality (10% - 100%)</label>
+          <input type="range" id="compressQ" min="10" max="100" value="60" oninput="document.getElementById('compressQVal').textContent=this.value+'%'">
+          <span id="compressQVal" style="font-size:.85rem;color:var(--text-muted);">60%</span>
+        </div>
+        <div class="form-group">
+          <label for="compressFmt">Output Format</label>
+          <select id="compressFmt">
+            <option value="image/jpeg">JPEG (smallest)</option>
+            <option value="image/webp">WebP (better quality/size)</option>
+            <option value="image/png">PNG (lossless)</option>
+          </select>
+        </div>
+        <button class="btn-calc" onclick="compressImage()">Compress & Download</button>
+        <p id="compressImgResult" style="margin-top:14px;font-size:.9rem;color:var(--success);display:none;"></p>
+      </div>
+
+      <!-- CONVERT -->
+      <div id="tab-convert" class="tab-content" style="display:none;">
+        <div class="form-group">
+          <label for="convertFmt">Convert To</label>
+          <select id="convertFmt">
+            <option value="image/png">PNG</option>
+            <option value="image/jpeg">JPEG</option>
+            <option value="image/webp">WebP</option>
+          </select>
+        </div>
+        <button class="btn-calc" onclick="convertImage()">Convert & Download</button>
+      </div>
+
+      <!-- CROP & ROTATE -->
+      <div id="tab-crop" class="tab-content" style="display:none;">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cropX">Crop X (px from left)</label>
+            <input type="number" id="cropX" value="0" min="0">
+          </div>
+          <div class="form-group">
+            <label for="cropY">Crop Y (px from top)</label>
+            <input type="number" id="cropY" value="0" min="0">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cropW">Crop Width (px)</label>
+            <input type="number" id="cropW" placeholder="e.g. 400" min="1">
+          </div>
+          <div class="form-group">
+            <label for="cropH">Crop Height (px)</label>
+            <input type="number" id="cropH" placeholder="e.g. 400" min="1">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="rotateDeg">Rotate (degrees)</label>
+          <select id="rotateDeg">
+            <option value="0">No rotation</option>
+            <option value="90">90° clockwise</option>
+            <option value="180">180°</option>
+            <option value="270">90° counter-clockwise</option>
+          </select>
+        </div>
+        <button class="btn-calc" onclick="cropRotateImage()">Apply & Download</button>
+      </div>
+
+      <!-- WATERMARK -->
+      <div id="tab-watermark" class="tab-content" style="display:none;">
+        <div class="form-group">
+          <label for="wmText">Watermark Text</label>
+          <input type="text" id="wmText" placeholder="e.g. © UtilityHub 2026">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="wmSize">Font Size (px)</label>
+            <input type="number" id="wmSize" value="48" min="10" max="200">
+          </div>
+          <div class="form-group">
+            <label for="wmOpacity">Opacity (0-1)</label>
+            <input type="number" id="wmOpacity" value="0.3" min="0.1" max="1" step="0.1">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="wmPos">Position</label>
+          <select id="wmPos">
+            <option value="center">Center</option>
+            <option value="bottom-right">Bottom Right</option>
+            <option value="bottom-left">Bottom Left</option>
+            <option value="top-right">Top Right</option>
+            <option value="top-left">Top Left</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="wmColor">Text Color</label>
+          <input type="color" id="wmColor" value="#ffffff" style="width:60px;height:36px;border:1px solid var(--border);border-radius:6px;">
+        </div>
+        <button class="btn-calc" onclick="watermarkImage()">Add Watermark & Download</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentImg = null;
+    let originalW = 0, originalH = 0;
+
+    function switchTab(tab, e) {
+      document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.style.background = 'var(--card)';
+        b.style.color = 'var(--text)';
+      });
+      document.getElementById('tab-' + tab).style.display = 'block';
+      e.target.style.background = 'var(--primary)';
+      e.target.style.color = '#fff';
+    }
+
+    function loadImage() {
+      const file = document.getElementById('imgFile').files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        currentImg = new Image();
+        currentImg.onload = () => {
+          originalW = currentImg.width;
+          originalH = currentImg.height;
+          document.getElementById('imgInfo').textContent = `${file.name} — ${originalW}×${originalH}px — ${(file.size/1024).toFixed(0)} KB`;
+          document.getElementById('resizeW').value = originalW;
+          document.getElementById('resizeH').value = originalH;
+          document.getElementById('cropW').value = originalW;
+          document.getElementById('cropH').value = originalH;
+        };
+        currentImg.src = e.target.result;
+        document.getElementById('previewImg').src = e.target.result;
+        document.getElementById('imgPreview').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function toggleRatio() {
+      const checked = document.getElementById('keepRatio').checked;
+      if (checked && currentImg) {
+        document.getElementById('resizeH').disabled = true;
+        document.getElementById('resizeH').value = '';
+      } else {
+        document.getElementById('resizeH').disabled = false;
+      }
+    }
+
+    function getCanvas() {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      return {canvas, ctx};
+    }
+
+    function downloadCanvas(canvas, format, quality) {
+      const ext = format === 'image/png' ? 'png' : format === 'image/webp' ? 'webp' : 'jpg';
+      canvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'output.' + ext; a.click();
+        URL.revokeObjectURL(url);
+      }, format, quality);
+    }
+
+    function resizeImage() {
+      if (!currentImg) { alert('Select an image first'); return; }
+      const w = parseInt(document.getElementById('resizeW').value);
+      const keepR = document.getElementById('keepRatio').checked;
+      let h = parseInt(document.getElementById('resizeH').value);
+      if (keepR) h = Math.round(w * originalH / originalW);
+      const {canvas, ctx} = getCanvas();
+      canvas.width = w; canvas.height = h;
+      ctx.drawImage(currentImg, 0, 0, w, h);
+      downloadCanvas(canvas, 'image/png', 1);
+    }
+
+    function compressImage() {
+      if (!currentImg) { alert('Select an image first'); return; }
+      const q = parseInt(document.getElementById('compressQ').value) / 100;
+      const fmt = document.getElementById('compressFmt').value;
+      const {canvas, ctx} = getCanvas();
+      canvas.width = originalW; canvas.height = originalH;
+      ctx.drawImage(currentImg, 0, 0);
+      canvas.toBlob(blob => {
+        const origSize = document.getElementById('imgFile').files[0].size;
+        const newSize = blob.size;
+        const savings = ((1 - newSize/origSize) * 100).toFixed(1);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'compressed.' + (fmt === 'image/png' ? 'png' : fmt === 'image/webp' ? 'webp' : 'jpg'); a.click();
+        URL.revokeObjectURL(url);
+        const r = document.getElementById('compressImgResult');
+        r.textContent = `Original: ${(origSize/1024).toFixed(0)} KB → Compressed: ${(newSize/1024).toFixed(0)} KB (${savings}% smaller)`;
+        r.style.display = 'block';
+      }, fmt, q);
+    }
+
+    function convertImage() {
+      if (!currentImg) { alert('Select an image first'); return; }
+      const fmt = document.getElementById('convertFmt').value;
+      const {canvas, ctx} = getCanvas();
+      canvas.width = originalW; canvas.height = originalH;
+      ctx.drawImage(currentImg, 0, 0);
+      downloadCanvas(canvas, fmt, 0.9);
+    }
+
+    function cropRotateImage() {
+      if (!currentImg) { alert('Select an image first'); return; }
+      const x = parseInt(document.getElementById('cropX').value) || 0;
+      const y = parseInt(document.getElementById('cropY').value) || 0;
+      const w = parseInt(document.getElementById('cropW').value) || originalW;
+      const h = parseInt(document.getElementById('cropH').value) || originalH;
+      const rot = parseInt(document.getElementById('rotateDeg').value);
+
+      let cw = w, ch = h;
+      if (rot === 90 || rot === 270) { cw = h; ch = w; }
+
+      const {canvas, ctx} = getCanvas();
+      canvas.width = cw; canvas.height = ch;
+      ctx.save();
+      ctx.translate(cw/2, ch/2);
+      ctx.rotate(rot * Math.PI / 180);
+      ctx.drawImage(currentImg, x, y, w, h, -w/2, -h/2, w, h);
+      ctx.restore();
+      downloadCanvas(canvas, 'image/png', 1);
+    }
+
+    function watermarkImage() {
+      if (!currentImg) { alert('Select an image first'); return; }
+      const text = document.getElementById('wmText').value;
+      if (!text) { alert('Enter watermark text'); return; }
+      const size = parseInt(document.getElementById('wmSize').value);
+      const opacity = parseFloat(document.getElementById('wmOpacity').value);
+      const pos = document.getElementById('wmPos').value;
+      const color = document.getElementById('wmColor').value;
+
+      const {canvas, ctx} = getCanvas();
+      canvas.width = originalW; canvas.height = originalH;
+      ctx.drawImage(currentImg, 0, 0);
+      ctx.font = `bold ${size}px Inter, sans-serif`;
+      ctx.fillStyle = color;
+      ctx.globalAlpha = opacity;
+      const metrics = ctx.measureText(text);
+      const tw = metrics.width;
+      const th = size;
+      let px, py;
+      switch(pos) {
+        case 'center': px = (originalW - tw)/2; py = (originalH + th)/2; break;
+        case 'bottom-right': px = originalW - tw - 20; py = originalH - 20; break;
+        case 'bottom-left': px = 20; py = originalH - 20; break;
+        case 'top-right': px = originalW - tw - 20; py = th + 10; break;
+        case 'top-left': px = 20; py = th + 10; break;
+      }
+      ctx.fillText(text, px, py);
+      ctx.globalAlpha = 1;
+      downloadCanvas(canvas, 'image/png', 1);
+    }
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

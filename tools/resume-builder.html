@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume Builder — UtilityHub</title>
+  <meta name="description" content="Free resume builder. Create a professional resume with live preview and PDF export.">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .resume-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 900px) { .resume-layout { grid-template-columns: 1fr; } }
+    .resume-form { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+    .resume-preview { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 40px; min-height: 600px; font-size: 14px; line-height: 1.6; box-shadow: var(--shadow); }
+    .resume-preview h1 { font-size: 24px; color: #1e293b; margin-bottom: 4px; }
+    .resume-preview h2 { font-size: 14px; text-transform: uppercase; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 4px; margin: 20px 0 10px; letter-spacing: 1px; }
+    .resume-preview h3 { font-size: 15px; color: #1e293b; margin-bottom: 2px; }
+    .resume-preview .r-contact { font-size: 12px; color: #64748b; margin-bottom: 16px; }
+    .resume-preview .r-contact span { margin-right: 12px; }
+    .resume-preview .r-item { margin-bottom: 12px; }
+    .resume-preview .r-item-head { display: flex; justify-content: space-between; font-weight: 600; }
+    .resume-preview .r-item-sub { font-size: 13px; color: #64748b; font-style: italic; }
+    .resume-preview .r-desc { margin-top: 4px; font-size: 13px; white-space: pre-line; }
+    .resume-preview ul { padding-left: 18px; font-size: 13px; }
+    .resume-preview .r-skills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .resume-preview .r-skill { background: var(--primary-light); color: var(--primary-dark); padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+    .section-block { border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    .section-block h4 { font-size: 1rem; font-weight: 600; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .btn-add { background: var(--primary-light); color: var(--primary-dark); border: none; padding: 4px 12px; border-radius: 6px; font-size: .85rem; cursor: pointer; }
+    .btn-remove { background: #fee2e2; color: #dc2626; border: none; padding: 4px 10px; border-radius: 6px; font-size: .8rem; cursor: pointer; margin-top: 8px; }
+    .dynamic-entry { background: var(--bg); border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a>
+      <nav class="nav"><a href="/" class="nav-link">All Tools</a></nav>
+    </div>
+  </header>
+
+  <div class="container tool-page">
+    <a href="/" class="back-link">← All Tools</a>
+    <h1>📝 Resume Builder</h1>
+    <p class="tool-desc-top">Build a professional resume with live preview. Export to PDF when ready.</p>
+
+    <div class="resume-layout">
+      <!-- FORM -->
+      <div class="resume-form">
+        <div class="section-block">
+          <h4>Personal Info</h4>
+          <div class="form-group"><label>Full Name</label><input type="text" id="rName" placeholder="John Doe" oninput="updatePreview()"></div>
+          <div class="form-row">
+            <div class="form-group"><label>Email</label><input type="email" id="rEmail" placeholder="john@example.com" oninput="updatePreview()"></div>
+            <div class="form-group"><label>Phone</label><input type="tel" id="rPhone" placeholder="+91..." oninput="updatePreview()"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Location</label><input type="text" id="rLoc" placeholder="City, State" oninput="updatePreview()"></div>
+            <div class="form-group"><label>LinkedIn / Website</label><input type="text" id="rLink" placeholder="linkedin.com/in/..." oninput="updatePreview()"></div>
+          </div>
+          <div class="form-group"><label>Professional Summary</label><textarea id="rSummary" rows="3" placeholder="Brief summary of your experience..." oninput="updatePreview()" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:.9rem;"></textarea></div>
+        </div>
+
+        <div class="section-block">
+          <h4>Work Experience <button class="btn-add" onclick="addExperience()">+ Add</button></h4>
+          <div id="expList"></div>
+        </div>
+
+        <div class="section-block">
+          <h4>Education <button class="btn-add" onclick="addEducation()">+ Add</button></h4>
+          <div id="eduList"></div>
+        </div>
+
+        <div class="section-block">
+          <h4>Skills (comma separated)</h4>
+          <div class="form-group"><input type="text" id="rSkills" placeholder="JavaScript, Python, Project Management..." oninput="updatePreview()"></div>
+        </div>
+
+        <div class="section-block">
+          <h4>Projects <button class="btn-add" onclick="addProject()">+ Add</button></h4>
+          <div id="projList"></div>
+        </div>
+
+        <button class="btn-calc" onclick="exportPDF()">⬇ Export to PDF</button>
+      </div>
+
+      <!-- PREVIEW -->
+      <div>
+        <div class="resume-preview" id="resumePreview">
+          <h1 id="pName">Your Name</h1>
+          <div class="r-contact" id="pContact"></div>
+          <div id="pSummary"></div>
+          <div id="pExperience"></div>
+          <div id="pEducation"></div>
+          <div id="pSkills"></div>
+          <div id="pProjects"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let experiences = [];
+    let educations = [];
+    let projects = [];
+
+    function addExperience() {
+      experiences.push({title:'', company:'', period:'', desc:''});
+      renderExp();
+    }
+    function addEducation() {
+      educations.push({degree:'', school:'', period:'', desc:''});
+      renderEdu();
+    }
+    function addProject() {
+      projects.push({name:'', link:'', desc:''});
+      renderProj();
+    }
+    function removeExp(i) { experiences.splice(i,1); renderExp(); updatePreview(); }
+    function removeEdu(i) { educations.splice(i,1); renderEdu(); updatePreview(); }
+    function removeProj(i) { projects.splice(i,1); renderProj(); updatePreview(); }
+
+    function renderExp() {
+      const list = document.getElementById('expList');
+      list.innerHTML = experiences.map((e, i) => `
+        <div class="dynamic-entry">
+          <div class="form-row">
+            <input type="text" placeholder="Job Title" oninput="experiences[${i}].title=this.value;updatePreview()" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;">
+            <input type="text" placeholder="Company" oninput="experiences[${i}].company=this.value;updatePreview()" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;">
+          </div>
+          <input type="text" placeholder="Period (e.g. Jan 2023 - Present)" oninput="experiences[${i}].period=this.value;updatePreview()" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;margin:6px 0;">
+          <textarea placeholder="Description (use line breaks)" rows="3" oninput="experiences[${i}].desc=this.value;updatePreview()" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:.9rem;"></textarea>
+          <button class="btn-remove" onclick="removeExp(${i})">Remove</button>
+        </div>
+      `).join('');
+    }
+    function renderEdu() {
+      const list = document.getElementById('eduList');
+      list.innerHTML = educations.map((e, i) => `
+        <div class="dynamic-entry">
+          <div class="form-row">
+            <input type="text" placeholder="Degree" oninput="educations[${i}].degree=this.value;updatePreview()" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;">
+            <input type="text" placeholder="School / University" oninput="educations[${i}].school=this.value;updatePreview()" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;">
+          </div>
+          <input type="text" placeholder="Period (e.g. 2018 - 2022)" oninput="educations[${i}].period=this.value;updatePreview()" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;margin:6px 0;">
+          <input type="text" placeholder="Details (optional)" oninput="educations[${i}].desc=this.value;updatePreview()" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;">
+          <button class="btn-remove" onclick="removeEdu(${i})">Remove</button>
+        </div>
+      `).join('');
+    }
+    function renderProj() {
+      const list = document.getElementById('projList');
+      list.innerHTML = projects.map((p, i) => `
+        <div class="dynamic-entry">
+          <div class="form-row">
+            <input type="text" placeholder="Project Name" oninput="projects[${i}].name=this.value;updatePreview()" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;">
+            <input type="text" placeholder="Link (optional)" oninput="projects[${i}].link=this.value;updatePreview()" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;">
+          </div>
+          <textarea placeholder="Description" rows="2" oninput="projects[${i}].desc=this.value;updatePreview()" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:.9rem;margin-top:6px;"></textarea>
+          <button class="btn-remove" onclick="removeProj(${i})">Remove</button>
+        </div>
+      `).join('');
+    }
+
+    function esc(s) { return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    function updatePreview() {
+      const name = document.getElementById('rName').value || 'Your Name';
+      const email = document.getElementById('rEmail').value;
+      const phone = document.getElementById('rPhone').value;
+      const loc = document.getElementById('rLoc').value;
+      const link = document.getElementById('rLink').value;
+      const summary = document.getElementById('rSummary').value;
+
+      document.getElementById('pName').textContent = name;
+      document.getElementById('pContact').innerHTML = [
+        email && `<span>✉ ${esc(email)}</span>`,
+        phone && `<span>📞 ${esc(phone)}</span>`,
+        loc && `<span>📍 ${esc(loc)}</span>`,
+        link && `<span>🔗 ${esc(link)}</span>`
+      ].filter(Boolean).join('');
+
+      let html = '';
+      if (summary) html += `<div id="pSummary"><h2>Summary</h2><p>${esc(summary)}</p></div>`;
+
+      if (experiences.some(e => e.title || e.company)) {
+        html += '<h2>Experience</h2>';
+        experiences.forEach(e => {
+          if (!e.title && !e.company) return;
+          html += `<div class="r-item"><div class="r-item-head"><span>${esc(e.title)} — ${esc(e.company)}</span><span style="font-size:12px;color:#64748b;">${esc(e.period)}</span></div>`;
+          if (e.desc) html += `<div class="r-desc">${esc(e.desc)}</div>`;
+          html += '</div>';
+        });
+      }
+
+      if (educations.some(e => e.degree || e.school)) {
+        html += '<h2>Education</h2>';
+        educations.forEach(e => {
+          if (!e.degree && !e.school) return;
+          html += `<div class="r-item"><div class="r-item-head"><span>${esc(e.degree)} — ${esc(e.school)}</span><span style="font-size:12px;color:#64748b;">${esc(e.period)}</span></div>`;
+          if (e.desc) html += `<div class="r-desc">${esc(e.desc)}</div>`;
+          html += '</div>';
+        });
+      }
+
+      const skills = document.getElementById('rSkills').value;
+      if (skills) {
+        html += '<h2>Skills</h2><div class="r-skills">';
+        skills.split(',').map(s => s.trim()).filter(Boolean).forEach(s => {
+          html += `<span class="r-skill">${esc(s)}</span>`;
+        });
+        html += '</div>';
+      }
+
+      if (projects.some(p => p.name)) {
+        html += '<h2>Projects</h2>';
+        projects.forEach(p => {
+          if (!p.name) return;
+          html += `<div class="r-item"><h3>${esc(p.name)}${p.link ? ' — <a href="'+esc(p.link)+'" style="font-size:12px;color:var(--primary);">'+esc(p.link)+'</a>' : ''}</h3>`;
+          if (p.desc) html += `<div class="r-desc">${esc(p.desc)}</div>`;
+          html += '</div>';
+        });
+      }
+
+      document.getElementById('pExperience').innerHTML = '';
+      document.getElementById('pEducation').innerHTML = '';
+      document.getElementById('pSkills').innerHTML = '';
+      document.getElementById('pProjects').innerHTML = '';
+      // Rebuild into preview
+      const preview = document.getElementById('resumePreview');
+      // Remove old dynamic sections
+      preview.querySelectorAll('.dynamic-section').forEach(el => el.remove());
+      const tempDiv = document.createElement('div');
+      tempDiv.className = 'dynamic-section';
+      tempDiv.innerHTML = html;
+      preview.appendChild(tempDiv);
+    }
+
+    function exportPDF() {
+      window.print();
+    }
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

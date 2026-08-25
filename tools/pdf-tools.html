@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Tools — UtilityHub</title>
+  <meta name="description" content="Free PDF tools — merge, split, compress, PDF to image, image to PDF. No upload, all in your browser.">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a>
+      <nav class="nav"><a href="/" class="nav-link">All Tools</a></nav>
+    </div>
+  </header>
+
+  <div class="container tool-page">
+    <a href="/" class="back-link">← All Tools</a>
+    <h1>📄 PDF Tools</h1>
+    <p class="tool-desc-top">Merge, split, compress, and convert PDFs — all in your browser, no upload needed.</p>
+
+    <div class="calculator-card">
+      <!-- Tool selector tabs -->
+      <div class="tabs" style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;">
+        <button class="tab-btn active" onclick="switchTab('merge')" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--primary);color:#fff;cursor:pointer;font-size:.9rem;">Merge PDFs</button>
+        <button class="tab-btn" onclick="switchTab('split')" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);cursor:pointer;font-size:.9rem;">Split PDF</button>
+        <button class="tab-btn" onclick="switchTab('compress')" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);cursor:pointer;font-size:.9rem;">Compress PDF</button>
+        <button class="tab-btn" onclick="switchTab('pdf2img')" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);cursor:pointer;font-size:.9rem;">PDF to Image</button>
+        <button class="tab-btn" onclick="switchTab('img2pdf')" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);cursor:pointer;font-size:.9rem;">Image to PDF</button>
+      </div>
+
+      <!-- MERGE -->
+      <div id="tab-merge" class="tab-content">
+        <p style="margin-bottom:16px;color:var(--text-muted);">Select 2 or more PDF files to merge into one.</p>
+        <div class="form-group">
+          <label for="mergeFiles" style="display:block;padding:20px;border:2px dashed var(--border);border-radius:10px;text-align:center;cursor:pointer;color:var(--text-muted);">
+            📁 Click to select PDF files<br><span style="font-size:.8rem;">(Hold Ctrl/Cmd to select multiple)</span>
+            <input type="file" id="mergeFiles" accept="application/pdf" multiple style="display:none;" onchange="showFileList('mergeFiles','mergeList')">
+          </label>
+        </div>
+        <div id="mergeList" style="margin-bottom:16px;"></div>
+        <button class="btn-calc" onclick="mergePDFs()">Merge & Download</button>
+      </div>
+
+      <!-- SPLIT -->
+      <div id="tab-split" class="tab-content" style="display:none;">
+        <p style="margin-bottom:16px;color:var(--text-muted);">Split a PDF at a specific page number into two files.</p>
+        <div class="form-group">
+          <label for="splitFile" style="display:block;padding:20px;border:2px dashed var(--border);border-radius:10px;text-align:center;cursor:pointer;color:var(--text-muted);">
+            📁 Select a PDF file
+            <input type="file" id="splitFile" accept="application/pdf" style="display:none;" onchange="document.getElementById('splitFileName').textContent=this.files[0]?.name||'No file'">
+          </label>
+        </div>
+        <p style="margin-bottom:8px;font-size:.9rem;">Selected: <span id="splitFileName" style="font-weight:600;">No file</span></p>
+        <div class="form-group">
+          <label for="splitAt">Split at page number (pages 1 to N → first file, rest → second)</label>
+          <input type="number" id="splitAt" placeholder="e.g. 3" min="1">
+        </div>
+        <button class="btn-calc" onclick="splitPDF()">Split & Download</button>
+      </div>
+
+      <!-- COMPRESS -->
+      <div id="tab-compress" class="tab-content" style="display:none;">
+        <p style="margin-bottom:16px;color:var(--text-muted);">Reduce PDF file size by re-rendering pages as compressed images.</p>
+        <div class="form-group">
+          <label for="compressFile" style="display:block;padding:20px;border:2px dashed var(--border);border-radius:10px;text-align:center;cursor:pointer;color:var(--text-muted);">
+            📁 Select a PDF file
+            <input type="file" id="compressFile" accept="application/pdf" style="display:none;" onchange="document.getElementById('compressFileName').textContent=this.files[0]?.name||'No file'">
+          </label>
+        </div>
+        <p style="margin-bottom:8px;font-size:.9rem;">Selected: <span id="compressFileName" style="font-weight:600;">No file</span></p>
+        <div class="form-group">
+          <label for="compressQuality">Image Quality</label>
+          <select id="compressQuality">
+            <option value="0.3">High compression (smallest file)</option>
+            <option value="0.5" selected>Medium compression (recommended)</option>
+            <option value="0.7">Low compression (better quality)</option>
+          </select>
+        </div>
+        <button class="btn-calc" onclick="compressPDF()">Compress & Download</button>
+        <p id="compressResult" style="margin-top:14px;font-size:.9rem;color:var(--success);display:none;"></p>
+      </div>
+
+      <!-- PDF TO IMAGE -->
+      <div id="tab-pdf2img" class="tab-content" style="display:none;">
+        <p style="margin-bottom:16px;color:var(--text-muted);">Convert each page of a PDF to a PNG image. Downloads as a ZIP.</p>
+        <div class="form-group">
+          <label for="pdf2imgFile" style="display:block;padding:20px;border:2px dashed var(--border);border-radius:10px;text-align:center;cursor:pointer;color:var(--text-muted);">
+            📁 Select a PDF file
+            <input type="file" id="pdf2imgFile" accept="application/pdf" style="display:none;" onchange="document.getElementById('pdf2imgFileName').textContent=this.files[0]?.name||'No file'">
+          </label>
+        </div>
+        <p style="margin-bottom:8px;font-size:.9rem;">Selected: <span id="pdf2imgFileName" style="font-weight:600;">No file</span></p>
+        <div class="form-group">
+          <label for="imgScale">Image Resolution Scale</label>
+          <select id="imgScale">
+            <option value="1">1x (normal)</option>
+            <option value="2" selected>2x (high quality)</option>
+            <option value="3">3x (very high)</option>
+          </select>
+        </div>
+        <button class="btn-calc" onclick="pdfToImage()">Convert & Download</button>
+        <div id="pdf2imgProgress" style="margin-top:14px;display:none;"></div>
+      </div>
+
+      <!-- IMAGE TO PDF -->
+      <div id="tab-img2pdf" class="tab-content" style="display:none;">
+        <p style="margin-bottom:16px;color:var(--text-muted);">Combine multiple images into a single PDF. One image per page.</p>
+        <div class="form-group">
+          <label for="img2pdfFiles" style="display:block;padding:20px;border:2px dashed var(--border);border-radius:10px;text-align:center;cursor:pointer;color:var(--text-muted);">
+            📁 Select image files (JPG, PNG, WebP)
+            <input type="file" id="img2pdfFiles" accept="image/*" multiple style="display:none;" onchange="showFileList('img2pdfFiles','img2pdfList')">
+          </label>
+        </div>
+        <div id="img2pdfList" style="margin-bottom:16px;"></div>
+        <div class="form-group">
+          <label for="pageSize">Page Size</label>
+          <select id="pageSize">
+            <option value="a4" selected>A4</option>
+            <option value="letter">US Letter</option>
+            <option value="fit">Fit to image</option>
+          </select>
+        </div>
+        <button class="btn-calc" onclick="imageToPDF()">Convert & Download</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const { PDFDocument } = PDFLib;
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.style.background = 'var(--card)';
+        b.style.color = 'var(--text)';
+      });
+      document.getElementById('tab-' + tab).style.display = 'block';
+      event.target.style.background = 'var(--primary)';
+      event.target.style.color = '#fff';
+    }
+
+    function showFileList(inputId, listId) {
+      const files = document.getElementById(inputId).files;
+      const list = document.getElementById(listId);
+      list.innerHTML = '';
+      Array.from(files).forEach((f, i) => {
+        const size = (f.size / 1024).toFixed(0);
+        list.innerHTML += `<div style="padding:8px 12px;background:var(--bg);border-radius:6px;margin-bottom:6px;font-size:.85rem;">${i+1}. ${f.name} <span style="color:var(--text-muted);">(${size} KB)</span></div>`;
+      });
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // MERGE
+    async function mergePDFs() {
+      const files = document.getElementById('mergeFiles').files;
+      if (files.length < 2) { alert('Select at least 2 PDF files'); return; }
+      const merged = await PDFDocument.create();
+      for (const file of files) {
+        const bytes = await file.arrayBuffer();
+        const pdf = await PDFDocument.load(bytes);
+        const pages = await merged.copyPages(pdf, pdf.getPageIndices());
+        pages.forEach(p => merged.addPage(p));
+      }
+      const out = await merged.save();
+      downloadBlob(new Blob([out], {type:'application/pdf'}), 'merged.pdf');
+    }
+
+    // SPLIT
+    async function splitPDF() {
+      const file = document.getElementById('splitFile').files[0];
+      const splitAt = parseInt(document.getElementById('splitAt').value);
+      if (!file || !splitAt) { alert('Select a file and page number'); return; }
+      const bytes = await file.arrayBuffer();
+      const src = await PDFDocument.load(bytes);
+      const total = src.getPageCount();
+      if (splitAt >= total) { alert(`Split point must be less than total pages (${total})`); return; }
+
+      const part1 = await PDFDocument.create();
+      const part2 = await PDFDocument.create();
+      const p1 = await part1.copyPages(src, Array.from({length: splitAt}, (_, i) => i));
+      p1.forEach(p => part1.addPage(p));
+      const p2 = await part2.copyPages(src, Array.from({length: total - splitAt}, (_, i) => i + splitAt));
+      p2.forEach(p => part2.addPage(p));
+
+      const out1 = await part1.save();
+      const out2 = await part2.save();
+      downloadBlob(new Blob([out1], {type:'application/pdf'}), 'part1_pages_1_to_' + splitAt + '.pdf');
+      setTimeout(() => downloadBlob(new Blob([out2], {type:'application/pdf'}), 'part2_pages_' + (splitAt+1) + '_to_' + total + '.pdf'), 1000);
+    }
+
+    // COMPRESS
+    async function compressPDF() {
+      const file = document.getElementById('compressFile').files[0];
+      if (!file) { alert('Select a PDF file'); return; }
+      const quality = parseFloat(document.getElementById('compressQuality').value);
+      const origSize = file.size;
+
+      const bytes = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({data: bytes}).promise;
+      const newPdf = await PDFDocument.create();
+      const scale = 1.5;
+
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const viewport = page.getViewport({scale});
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext('2d');
+        await page.render({canvasContext: ctx, viewport}).promise;
+        const jpgData = canvas.toDataURL('image/jpeg', quality);
+        const jpgBytes = await fetch(jpgData).then(r => r.arrayBuffer());
+        const img = await newPdf.embedJpg(jpgBytes);
+        const p = newPdf.addPage([viewport.width, viewport.height]);
+        p.drawImage(img, {x:0, y:0, width:viewport.width, height:viewport.height});
+      }
+
+      const out = await newPdf.save();
+      const newSize = out.byteLength;
+      const savings = ((1 - newSize/origSize) * 100).toFixed(1);
+      downloadBlob(new Blob([out], {type:'application/pdf'}), 'compressed.pdf');
+
+      const result = document.getElementById('compressResult');
+      result.textContent = `Original: ${(origSize/1024).toFixed(0)} KB → Compressed: ${(newSize/1024).toFixed(0)} KB (${savings}% smaller)`;
+      result.style.display = 'block';
+    }
+
+    // PDF TO IMAGE
+    async function pdfToImage() {
+      const file = document.getElementById('pdf2imgFile').files[0];
+      const scale = parseFloat(document.getElementById('imgScale').value);
+      if (!file) { alert('Select a PDF file'); return; }
+      const progress = document.getElementById('pdf2imgProgress');
+      progress.style.display = 'block';
+      progress.innerHTML = '<p>Converting... please wait</p>';
+
+      const bytes = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({data: bytes}).promise;
+      const images = [];
+
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const viewport = page.getViewport({scale});
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext('2d');
+        await page.render({canvasContext: ctx, viewport}).promise;
+        const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+        images.push({name: `page_${String(i).padStart(3,'0')}.png`, blob});
+        progress.innerHTML = `<p>Converted page ${i} of ${pdf.numPages}...</p>`;
+      }
+
+      // Download each image
+      for (const img of images) {
+        downloadBlob(img.blob, img.name);
+        await new Promise(r => setTimeout(r, 300));
+      }
+      progress.innerHTML = `<p style="color:var(--success);">✅ Done! ${images.length} images downloaded.</p>`;
+    }
+
+    // IMAGE TO PDF
+    async function imageToPDF() {
+      const files = document.getElementById('img2pdfFiles').files;
+      const pageSize = document.getElementById('pageSize').value;
+      if (files.length === 0) { alert('Select at least one image'); return; }
+
+      const pdf = await PDFDocument.create();
+      const pageSizes = {a4: [595.28, 841.89], letter: [612, 792]};
+
+      for (const file of files) {
+        const bytes = await file.arrayBuffer();
+        let img;
+        if (file.type === 'image/png') {
+          img = await pdf.embedPng(bytes);
+        } else {
+          img = await pdf.embedJpg(bytes);
+        }
+        const w = img.width, h = img.height;
+
+        if (pageSize === 'fit') {
+          const page = pdf.addPage([w, h]);
+          page.drawImage(img, {x:0, y:0, width:w, height:h});
+        } else {
+          const [pw, ph] = pageSizes[pageSize];
+          const page = pdf.addPage([pw, ph]);
+          // Fit image within page with 20px margin
+          const margin = 20;
+          const maxW = pw - 2*margin, maxH = ph - 2*margin;
+          const ratio = Math.min(maxW/w, maxH/h);
+          const drawW = w * ratio, drawH = h * ratio;
+          page.drawImage(img, {x:(pw-drawW)/2, y:(ph-drawH)/2, width:drawW, height:drawH});
+        }
+      }
+
+      const out = await pdf.save();
+      downloadBlob(new Blob([out], {type:'application/pdf'}), 'images_to_pdf.pdf');
+    }
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Writing Tools — UtilityHub</title>
+  <meta name="description" content="Free writing tools — text summarizer, paraphraser, grammar checker, word counter, case converter.">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .writing-tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+    textarea.writing-input { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 1rem; line-height: 1.6; outline: none; resize: vertical; min-height: 120px; }
+    textarea.writing-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+    .output-area { margin-top: 20px; padding: 20px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; display: none; }
+    .output-area.show { display: block; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-top: 16px; }
+    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 14px; text-align: center; }
+    .stat-num { font-size: 1.6rem; font-weight: 700; color: var(--primary); }
+    .stat-label { font-size: .8rem; color: var(--text-muted); margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a>
+      <nav class="nav"><a href="/" class="nav-link">All Tools</a></nav>
+    </div>
+  </header>
+
+  <div class="container tool-page">
+    <a href="/" class="back-link">← All Tools</a>
+    <h1>✍️ AI Writing Tools</h1>
+    <p class="tool-desc-top">Text summarizer, paraphraser, grammar checker, word counter, and case converter — all client-side.</p>
+
+    <div class="calculator-card">
+      <div class="writing-tabs">
+        <button class="tab-btn active" onclick="switchTab('summary',event)" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--primary);color:#fff;cursor:pointer;font-size:.9rem;">Summarizer</button>
+        <button class="tab-btn" onclick="switchTab('paraphrase',event)" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);cursor:pointer;font-size:.9rem;">Paraphraser</button>
+        <button class="tab-btn" onclick="switchTab('grammar',event)" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);cursor:pointer;font-size:.9rem;">Grammar Check</button>
+        <button class="tab-btn" onclick="switchTab('counter',event)" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);cursor:pointer;font-size:.9rem;">Word Counter</button>
+        <button class="tab-btn" onclick="switchTab('case',event)" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);cursor:pointer;font-size:.9rem;">Case Converter</button>
+      </div>
+
+      <!-- SUMMARIZER -->
+      <div id="tab-summary" class="tab-content">
+        <div class="form-group">
+          <label for="sumInput">Paste your text to summarize</label>
+          <textarea id="sumInput" class="writing-input" rows="8" placeholder="Paste a long article, essay, or document here..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="sumLength">Summary Length</label>
+          <select id="sumLength">
+            <option value="3">Short (3 sentences)</option>
+            <option value="5" selected>Medium (5 sentences)</option>
+            <option value="8">Long (8 sentences)</option>
+          </select>
+        </div>
+        <button class="btn-calc" onclick="summarize()">Summarize</button>
+        <div class="output-area" id="sumOutput">
+          <h3 style="margin-bottom:10px;font-size:1rem;">Summary:</h3>
+          <p id="sumResult" style="line-height:1.7;"></p>
+        </div>
+      </div>
+
+      <!-- PARAPHRASER -->
+      <div id="tab-paraphrase" class="tab-content" style="display:none;">
+        <div class="form-group">
+          <label for="paraInput">Text to paraphrase</label>
+          <textarea id="paraInput" class="writing-input" rows="6" placeholder="Paste text to rephrase..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="paraMode">Paraphrase Mode</label>
+          <select id="paraMode">
+            <option value="simple">Simple (easier vocabulary)</option>
+            <option value="formal">Formal (professional tone)</option>
+            <option value="concise">Concise (shorter)</option>
+          </select>
+        </div>
+        <button class="btn-calc" onclick="paraphrase()">Paraphrase</button>
+        <div class="output-area" id="paraOutput">
+          <h3 style="margin-bottom:10px;font-size:1rem;">Paraphrased:</h3>
+          <p id="paraResult" style="line-height:1.7;"></p>
+        </div>
+      </div>
+
+      <!-- GRAMMAR CHECK -->
+      <div id="tab-grammar" class="tab-content" style="display:none;">
+        <div class="form-group">
+          <label for="gramInput">Text to check</label>
+          <textarea id="gramInput" class="writing-input" rows="6" placeholder="Paste text to check for grammar issues..."></textarea>
+        </div>
+        <button class="btn-calc" onclick="checkGrammar()">Check Grammar</button>
+        <div class="output-area" id="gramOutput">
+          <h3 style="margin-bottom:10px;font-size:1rem;">Issues Found:</h3>
+          <div id="gramResult" style="line-height:1.7;"></div>
+        </div>
+      </div>
+
+      <!-- WORD COUNTER -->
+      <div id="tab-counter" class="tab-content" style="display:none;">
+        <div class="form-group">
+          <label for="wcInput">Type or paste text</label>
+          <textarea id="wcInput" class="writing-input" rows="8" placeholder="Start typing..." oninput="updateStats()"></textarea>
+        </div>
+        <div class="stats-grid" id="wcStats" style="display:none;">
+          <div class="stat-card"><div class="stat-num" id="stWords">0</div><div class="stat-label">Words</div></div>
+          <div class="stat-card"><div class="stat-num" id="stChars">0</div><div class="stat-label">Characters</div></div>
+          <div class="stat-card"><div class="stat-num" id="stCharsNS">0</div><div class="stat-label">No Spaces</div></div>
+          <div class="stat-card"><div class="stat-num" id="stSent">0</div><div class="stat-label">Sentences</div></div>
+          <div class="stat-card"><div class="stat-num" id="stPara">0</div><div class="stat-label">Paragraphs</div></div>
+          <div class="stat-card"><div class="stat-num" id="stRead">0</div><div class="stat-label">Read Time (min)</div></div>
+        </div>
+      </div>
+
+      <!-- CASE CONVERTER -->
+      <div id="tab-case" class="tab-content" style="display:none;">
+        <div class="form-group">
+          <label for="caseInput">Text to convert</label>
+          <textarea id="caseInput" class="writing-input" rows="6" placeholder="Paste text here..."></textarea>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+          <button class="btn-calc" style="width:auto;padding:10px 16px;font-size:.85rem;" onclick="convertCase('upper')">UPPERCASE</button>
+          <button class="btn-calc" style="width:auto;padding:10px 16px;font-size:.85rem;" onclick="convertCase('lower')">lowercase</button>
+          <button class="btn-calc" style="width:auto;padding:10px 16px;font-size:.85rem;" onclick="convertCase('title')">Title Case</button>
+          <button class="btn-calc" style="width:auto;padding:10px 16px;font-size:.85rem;" onclick="convertCase('sentence')">Sentence case</button>
+          <button class="btn-calc" style="width:auto;padding:10px 16px;font-size:.85rem;" onclick="convertCase('camel')">camelCase</button>
+          <button class="btn-calc" style="width:auto;padding:10px 16px;font-size:.85rem;" onclick="convertCase('snake')">snake_case</button>
+          <button class="btn-calc" style="width:auto;padding:10px 16px;font-size:.85rem;" onclick="convertCase('kebab')">kebab-case</button>
+        </div>
+        <div class="output-area" id="caseOutput">
+          <h3 style="margin-bottom:10px;font-size:1rem;">Result:</h3>
+          <p id="caseResult" style="line-height:1.7;white-space:pre-wrap;"></p>
+          <button class="btn-calc" style="width:auto;margin-top:12px;padding:8px 16px;font-size:.85rem;" onclick="copyText('caseResult')">📋 Copy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tab, e) {
+      document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+      document.querySelectorAll('.tab-btn').forEach(b => { b.style.background='var(--card)'; b.style.color='var(--text)'; });
+      document.getElementById('tab-'+tab).style.display='block';
+      e.target.style.background='var(--primary)'; e.target.style.color='#fff';
+    }
+
+    // SUMMARIZER (extractive — picks top sentences by score)
+    function summarize() {
+      const text = document.getElementById('sumInput').value.trim();
+      if (!text || text.length < 100) { alert('Enter at least 100 characters'); return; }
+      const numSentences = parseInt(document.getElementById('sumLength').value);
+      const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+      if (sentences.length <= numSentences) {
+        document.getElementById('sumResult').textContent = text;
+        document.getElementById('sumOutput').classList.add('show');
+        return;
+      }
+      // Score sentences by word frequency
+      const words = text.toLowerCase().match(/\b\w+\b/g) || [];
+      const stopWords = new Set(['the','a','an','is','are','was','were','be','been','being','have','has','had','do','does','did','will','would','could','should','may','might','must','can','of','in','on','at','to','for','with','by','from','as','and','or','but','not','no','if','then','that','this','these','those','it','its','he','she','they','we','you','i','me','my','your','our','their','his','her','them','us']);
+      const freq = {};
+      words.forEach(w => { if (!stopWords.has(w) && w.length > 3) freq[w] = (freq[w]||0)+1; });
+      const scored = sentences.map((s, i) => {
+        const sWords = s.toLowerCase().match(/\b\w+\b/g) || [];
+        let score = sWords.reduce((sum, w) => sum + (freq[w]||0), 0) / Math.sqrt(sWords.length);
+        if (i === 0) score *= 1.5; // boost first sentence
+        return {s, i, score};
+      });
+      const top = scored.sort((a,b) => b.score - a.score).slice(0, numSentences).sort((a,b) => a.i - b.i);
+      document.getElementById('sumResult').textContent = top.map(t => t.s.trim()).join(' ');
+      document.getElementById('sumOutput').classList.add('show');
+    }
+
+    // PARAPHRASER (rule-based synonym replacement)
+    function paraphrase() {
+      const text = document.getElementById('paraInput').value.trim();
+      const mode = document.getElementById('paraMode').value;
+      if (!text) { alert('Enter text to paraphrase'); return; }
+
+      const synonyms = {
+        simple: { 'utilize':'use', 'commence':'start', 'terminate':'end', 'demonstrate':'show', 'facilitate':'help', 'endeavor':'try', 'subsequently':'then', 'furthermore':'also', 'nevertheless':'but', 'consequently':'so', 'approximately':'about', 'sufficient':'enough', 'obtain':'get', 'purchase':'buy', 'require':'need', 'additional':'more', 'regarding':'about', 'individuals':'people', 'numerous':'many', 'assist':'help' },
+        formal: { 'get':'obtain', 'use':'utilize', 'start':'commence', 'end':'conclude', 'show':'demonstrate', 'help':'facilitate', 'try':'endeavor', 'buy':'purchase', 'need':'require', 'more':'additional', 'about':'regarding', 'people':'individuals', 'many':'numerous', 'big':'significant', 'good':'favorable', 'bad':'unfavorable', 'thing':'element', 'way':'method', 'make':'create' },
+        concise: { 'in order to':'to', 'due to the fact that':'because', 'a large number of':'many', 'at this point in time':'now', 'in the event that':'if', 'with regard to':'about', 'for the purpose of':'for', 'in spite of':'despite', 'with the exception of':'except', 'take into consideration':'consider' }
+      };
+      const dict = synonyms[mode] || synonyms.simple;
+      let result = text;
+      for (const [from, to] of Object.entries(dict)) {
+        result = result.replace(new RegExp('\\b' + from + '\\b', 'gi'), to);
+      }
+      if (mode === 'concise') {
+        result = result.replace(/\bvery\s+/gi, '').replace(/\breally\s+/gi, '').replace(/\bjust\s+/gi, '').replace(/\bthat\s+was\s+/gi, 'was ');
+      }
+      document.getElementById('paraResult').textContent = result;
+      document.getElementById('paraOutput').classList.add('show');
+    }
+
+    // GRAMMAR CHECK (rule-based common mistakes)
+    function checkGrammar() {
+      const text = document.getElementById('gramInput').value;
+      if (!text.trim()) { alert('Enter text to check'); return; }
+      const issues = [];
+      const rules = [
+        { regex: /\bi\s/g, msg: '"i" should be capitalized as "I"', fix: 'I ' },
+        { regex: /\b(?:its)\s+(?:a|the|an)\b/gi, msg: '"its" → "it\'s" (contraction needed before article)', fix: null },
+        { regex: /\b(?:your)\s+(?:welcome|right|wrong|correct)\b/gi, msg: '"your" → "you\'re" (contraction needed)', fix: null },
+        { regex: /\b(?:there)\s+(?:going|coming|leaving|arriving|working)\b/gi, msg: '"there" → "they\'re" (they are)', fix: null },
+        { regex: /\b(?:could|would|should) of\b/gi, msg: '"could/would/should of" → "could/would/should have"', fix: null },
+        { regex: /\b(?:alot)\b/gi, msg: '"alot" is not a word — use "a lot"', fix: null },
+        { regex: /\b(?:definately)\b/gi, msg: '"definately" → "definitely"', fix: null },
+        { regex: /\b(?:seperate)\b/gi, msg: '"seperate" → "separate"', fix: null },
+        { regex: /\b(?:recieve)\b/gi, msg: '"recieve" → "receive" (i before e)', fix: null },
+        { regex: /\b(?:occured)\b/gi, msg: '"occured" → "occurred" (double r)', fix: null },
+        { regex: /\b(?:untill)\b/gi, msg: '"untill" → "until" (one l)', fix: null },
+        { regex: /\s{2,}/g, msg: 'Multiple spaces — use single space', fix: ' ' },
+        { regex: /\s+([.,;!?])/g, msg: 'Space before punctuation — remove it', fix: '$1' },
+        { regex: /\b(?:teh)\b/gi, msg: '"teh" → "the" (typo)', fix: null },
+        { regex: /[.!?]\s+[a-z]/g, msg: 'Sentence may need capitalization after period', fix: null },
+      ];
+      rules.forEach(r => {
+        const matches = text.match(r.regex);
+        if (matches) {
+          matches.forEach(m => issues.push({msg: r.msg, snippet: m.trim()}));
+        }
+      });
+      const resultDiv = document.getElementById('gramResult');
+      if (issues.length === 0) {
+        resultDiv.innerHTML = '<p style="color:var(--success);">✅ No common grammar issues found!</p>';
+      } else {
+        resultDiv.innerHTML = `<p style="margin-bottom:10px;">${issues.length} issue(s) found:</p>` +
+          issues.map(i => `<div style="padding:8px 12px;background:#fef3c7;border-radius:6px;margin-bottom:6px;font-size:.85rem;"><strong>⚠️</strong> ${i.msg}<br><span style="color:var(--text-muted);">Found: "${i.snippet}"</span></div>`).join('');
+      }
+      document.getElementById('gramOutput').classList.add('show');
+    }
+
+    // WORD COUNTER
+    function updateStats() {
+      const text = document.getElementById('wcInput').value;
+      const words = text.trim() ? text.trim().split(/\s+/) : [];
+      const chars = text.length;
+      const charsNS = text.replace(/\s/g, '').length;
+      const sentences = text.match(/[.!?]+/g) ? text.match(/[.!?]+/g).length : (text.trim() ? 1 : 0);
+      const paras = text.trim() ? text.trim().split(/\n\s*\n/).filter(p => p.trim()).length : 0;
+      const readTime = Math.max(1, Math.ceil(words.length / 200));
+      document.getElementById('stWords').textContent = words.length.toLocaleString();
+      document.getElementById('stChars').textContent = chars.toLocaleString();
+      document.getElementById('stCharsNS').textContent = charsNS.toLocaleString();
+      document.getElementById('stSent').textContent = sentences.toLocaleString();
+      document.getElementById('stPara').textContent = paras.toLocaleString();
+      document.getElementById('stRead').textContent = readTime;
+      document.getElementById('wcStats').style.display = 'grid';
+    }
+
+    // CASE CONVERTER
+    function convertCase(type) {
+      const text = document.getElementById('caseInput').value;
+      if (!text) { alert('Enter text first'); return; }
+      let result = '';
+      switch(type) {
+        case 'upper': result = text.toUpperCase(); break;
+        case 'lower': result = text.toLowerCase(); break;
+        case 'title': result = text.replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase()); break;
+        case 'sentence': result = text.toLowerCase().replace(/(^\s*\w|[.!?]\s+\w)/g, c => c.toUpperCase()); break;
+        case 'camel': result = text.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (_, c) => c.toUpperCase()); break;
+        case 'snake': result = text.trim().toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, ''); break;
+        case 'kebab': result = text.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, ''); break;
+      }
+      document.getElementById('caseResult').textContent = result;
+      document.getElementById('caseOutput').classList.add('show');
+    }
+
+    function copyText(id) {
+      const text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Copied to clipboard!');
+      });
+    }
+  </script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

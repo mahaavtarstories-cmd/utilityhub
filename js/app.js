@@ -1,6 +1,7 @@
-// Render tool cards
-const grid = document.getElementById('toolsGrid');
-if (grid) {
+// Render tool cards by phase
+const grid1 = document.getElementById('toolsGrid1');
+const grid2 = document.getElementById('toolsGrid2');
+if (grid1 || grid2) {
   tools.forEach(t => {
     const card = document.createElement('a');
     card.className = 'tool-card';
@@ -11,7 +12,8 @@ if (grid) {
       <div class="tool-name">${t.name}</div>
       <div class="tool-desc">${t.desc}</div>
     `;
-    grid.appendChild(card);
+    if (t.phase === 1 && grid1) grid1.appendChild(card);
+    else if (t.phase === 2 && grid2) grid2.appendChild(card);
   });
 }
 
