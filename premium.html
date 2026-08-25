@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Premium — UtilityHub</title>
+  <meta name="description" content="Upgrade to UtilityHub Premium — advanced calculators, batch tools, ad-free experience, and business subscriptions.">
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .pricing-hero { text-align:center; padding:56px 20px 40px; background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%); color:#fff; }
+    .pricing-hero h1 { font-size:2.4rem; font-weight:800; margin-bottom:10px; }
+    .pricing-hero p { font-size:1.1rem; opacity:.9; }
+    .pricing-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; max-width:1000px; margin:40px auto; padding:0 20px; }
+    @media(max-width:768px){ .pricing-grid{ grid-template-columns:1fr; } }
+    .price-card { background:#fff;border:1px solid var(--border);border-radius:16px;padding:32px; box-shadow:var(--shadow); position:relative; }
+    .price-card.popular { border-color:var(--primary); border-width:2px; box-shadow:0 4px 20px rgba(99,102,241,.15); }
+    .price-card.popular::before { content:'Most Popular'; position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--primary); color:#fff; padding:4px 14px; border-radius:20px; font-size:.75rem; font-weight:600; }
+    .price-tier { font-size:.85rem; font-weight:600; color:var(--primary); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+    .price-amount { font-size:2.6rem; font-weight:800; margin-bottom:4px; }
+    .price-period { font-size:.9rem; color:var(--text-muted); margin-bottom:20px; }
+    .price-features { list-style:none; padding:0; margin:0 0 24px; }
+    .price-features li { padding:8px 0; font-size:.9rem; display:flex; align-items:center; gap:8px; }
+    .price-features li::before { content:'✓'; color:var(--success); font-weight:700; }
+    .price-features li.off { color:#cbd5e1; }
+    .price-features li.off::before { content:'✗'; color:#e2e8f0; }
+    .btn-price { width:100%; padding:14px; border:none; border-radius:8px; font-size:1rem; font-weight:600; cursor:pointer; transition:all .2s; }
+    .btn-price.primary { background:var(--primary); color:#fff; }
+    .btn-price.primary:hover { background:var(--primary-dark); }
+    .btn-price.secondary { background:#f1f5f9; color:var(--text); }
+    .btn-price.secondary:hover { background:#e2e8f0; }
+    .premium-tools-section { padding:48px 0; max-width:1000px; margin:0 auto; padding:0 20px 48px; }
+    .premium-tool-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
+    .premium-tool-card { background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px; position:relative; }
+    .premium-tool-card .lock { position:absolute; top:16px; right:16px; font-size:1.2rem; }
+    .premium-tool-card .icon { font-size:1.8rem; margin-bottom:8px; }
+    .premium-tool-card h3 { font-size:1.05rem; font-weight:600; margin-bottom:4px; }
+    .premium-tool-card p { font-size:.85rem; color:var(--text-muted); }
+    .biz-section { background:#fff;border-top:1px solid var(--border); padding:48px 20px; text-align:center; }
+    .biz-section h2 { font-size:1.6rem; font-weight:700; margin-bottom:12px; }
+    .biz-section p { color:var(--text-muted); max-width:600px; margin:0 auto 24px; }
+    .biz-features { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:20px; max-width:800px; margin:0 auto; }
+    .biz-feat { text-align:left; padding:16px; background:var(--bg); border-radius:10px; }
+    .biz-feat h4 { font-size:.95rem; font-weight:600; margin-bottom:4px; }
+    .biz-feat p { font-size:.82rem; color:var(--text-muted); margin:0; }
+    .faq-section { max-width:700px; margin:0 auto; padding:48px 20px; }
+    .faq-item { border-bottom:1px solid var(--border); padding:16px 0; }
+    .faq-item h3 { font-size:1rem; font-weight:600; cursor:pointer; }
+    .faq-item p { font-size:.9rem; color:var(--text-muted); margin-top:8px; display:none; }
+    .faq-item.open p { display:block; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a>
+      <nav class="nav">
+        <a href="/" class="nav-link">Tools</a>
+        <a href="/premium.html" class="nav-link" style="color:var(--primary);font-weight:600;">Premium</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="pricing-hero">
+    <h1>Upgrade to Premium</h1>
+    <p>Unlock advanced tools, remove ads, and get business features</p>
+  </section>
+
+  <div class="pricing-grid">
+    <!-- Free -->
+    <div class="price-card">
+      <div class="price-tier">Free</div>
+      <div class="price-amount">₹0</div>
+      <div class="price-period">forever</div>
+      <ul class="price-features">
+        <li>All 15 basic tools</li>
+        <li>Unlimited calculations</li>
+        <li>Client-side processing</li>
+        <li>Ad-supported</li>
+        <li class="off">Premium tools</li>
+        <li class="off">Batch processing</li>
+        <li class="off">No ads</li>
+        <li class="off">Priority support</li>
+      </ul>
+      <button class="btn-price secondary" onclick="window.location.href='/'">Current Plan</button>
+    </div>
+
+    <!-- Pro (Most Popular) -->
+    <div class="price-card popular">
+      <div class="price-tier">Pro</div>
+      <div class="price-amount">₹299</div>
+      <div class="price-period">per month</div>
+      <ul class="price-features">
+        <li>Everything in Free</li>
+        <li>All 6 premium tools</li>
+        <li>Batch PDF processing</li>
+        <li>No ads</li>
+        <li>Export without watermark</li>
+        <li>Priority email support</li>
+        <li class="off">Team access (5 seats)</li>
+        <li class="off">Custom branding</li>
+      </ul>
+      <button class="btn-price primary" onclick="subscribe('pro')">Upgrade to Pro</button>
+    </div>
+
+    <!-- Business -->
+    <div class="price-card">
+      <div class="price-tier">Business</div>
+      <div class="price-amount">₹999</div>
+      <div class="price-period">per month</div>
+      <ul class="price-features">
+        <li>Everything in Pro</li>
+        <li>Team access (5 seats)</li>
+        <li>Custom branding on exports</li>
+        <li>API access (1000 calls/day)</li>
+        <li>White-label PDF tools</li>
+        <li>Invoice generator</li>
+        <li>Dedicated support</li>
+        <li>Custom integrations</li>
+      </ul>
+      <button class="btn-price primary" onclick="subscribe('business')">Get Business</button>
+    </div>
+  </div>
+
+  <section class="premium-tools-section">
+    <h2 style="font-size:1.5rem;font-weight:700;text-align:center;margin-bottom:28px;">Premium Tools</h2>
+    <div class="premium-tool-grid" id="premiumTools"></div>
+  </section>
+
+  <section class="biz-section">
+    <h2>Business Subscriptions</h2>
+    <p>For accounting firms, HR teams, and businesses that need UtilityHub at scale. Custom pricing available for 50+ seats.</p>
+    <div class="biz-features">
+      <div class="biz-feat"><h4>🏢 Multi-seat Access</h4><p>Invite team members with role-based permissions and shared tool configurations.</p></div>
+      <div class="biz-feat"><h4>🔌 API Access</h4><p>Integrate UtilityHub calculators into your internal tools and dashboards.</p></div>
+      <div class="biz-feat"><h4>🏷️ White-label</h4><p>Remove UtilityHub branding and add your company logo on all exports.</p></div>
+      <div class="biz-feat"><h4>📊 Usage Analytics</h4><p>Track tool usage across your team with detailed analytics dashboard.</p></div>
+    </div>
+    <button class="btn-price primary" style="max-width:250px;margin-top:28px;" onclick="contactSales()">Contact Sales</button>
+  </section>
+
+  <section class="faq-section">
+    <h2 style="text-align:center;font-size:1.5rem;font-weight:700;margin-bottom:24px;">FAQ</h2>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <h3>Can I try premium tools before paying?</h3>
+      <p>Yes! Every premium tool has a free preview — you can see the interface and try a limited version. Upgrade anytime to unlock full features.</p>
+    </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <h3>How do I cancel my subscription?</h3>
+      <p>Cancel anytime from your account dashboard. You'll keep premium access until the end of your billing period. No cancellation fees.</p>
+    </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <h3>Do you offer annual billing?</h3>
+      <p>Yes — pay annually and save 20%. Pro becomes ₹2,870/year and Business becomes ₹9,588/year. Choose annual billing at checkout.</p>
+    </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <h3>Is my data safe?</h3>
+      <p>All calculations run in your browser. We don't store your financial data on our servers. Premium subscriptions are processed through secure payment gateways (Razorpay/UPI).</p>
+    </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <h3>Can I get a refund?</h3>
+      <p>Yes — 7-day money-back guarantee on all paid plans. No questions asked.</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 UtilityHub. Free tools, forever.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Render premium tools
+    const premiumTools = [
+      { id:'advanced-emi', name:'Advanced EMI Planner', desc:'Prepayment scenarios, balance transfer analysis, interest savings calculator', icon:'🏦' },
+      { id:'tax-planner', name:'Income Tax Planner', desc:'Old vs new regime comparison, deductions optimizer, tax saving recommendations', icon:'🧾' },
+      { id:'investment-roi', name:'Investment ROI Tracker', desc:'Multi-asset portfolio returns, CAGR, XIRR with dividend tracking', icon:'📊' },
+      { id:'batch-pdf', name:'Batch PDF Processor', desc:'Process 50+ PDFs at once — bulk merge, compress, watermark, split', icon:'📦' },
+      { id:'logo-maker', name:'Logo Maker', desc:'AI-assisted logo design with 100+ templates, custom colors, SVG export', icon:'🎨' },
+      { id:'invoice-gen', name:'Invoice Generator', desc:'Professional GST invoices with templates, client database, recurring billing', icon:'🧾' },
+    ];
+    const grid = document.getElementById('premiumTools');
+    premiumTools.forEach(t => {
+      grid.innerHTML += `<div class="premium-tool-card">
+        <span class="lock">🔒</span>
+        <div class="icon">${t.icon}</div>
+        <h3>${t.name}</h3>
+        <p>${t.desc}</p>
+      </div>`;
+    });
+
+    function subscribe(plan) {
+      // In production: redirect to Razorpay/UPI checkout
+      alert(`🚀 ${plan.toUpperCase()} plan selected!\n\nPayment integration coming soon. You'll be redirected to secure checkout (Razorpay/UPI) when payment is configured.`);
+      trackEvent('subscription', 'initiate', plan);
+    }
+
+    function contactSales() {
+      window.location.href = 'mailto:sales@utilityshub.com?subject=Business%20Subscription%20Inquiry&body=Hi,%0A%0AI%27m%20interested%20in%20UtilityHub%20Business%20subscription.%0A%0ACompany%20name%3A%0ATeam%20size%3A%0AUse%20case%3A';
+    }
+  </script>
+  <script src="js/monetization.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
