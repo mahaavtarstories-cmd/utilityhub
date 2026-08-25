@@ -118,10 +118,10 @@ if (typeof injectHomepageAds !== 'undefined') {
   }
 })();
 
-// Add Premium nav link to header on all pages
+// Add Premium nav link to header on pages that don't have it
 (function addPremiumNav() {
   const nav = document.querySelector('.nav');
-  if (!nav || nav.querySelector('.nav-premium')) return;
+  if (!nav || nav.querySelector('a[href="/premium.html"]')) return;
   const link = document.createElement('a');
   link.href = '/premium.html';
   link.className = 'nav-link nav-premium';
