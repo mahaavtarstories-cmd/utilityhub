@@ -1,7 +1,7 @@
 /* UtilityHub — Payments config (PUBLIC-SAFE).
    ⚠️ Never place an email, API key, or secret in this file: it is served publicly
    and the repository is public. Use PayPal *hosted* payment links / buttons
-   (or a Razorpay payment page) only — those keep the receiving account hidden.
+   (or a PayPal-hosted payment page) only — those keep the receiving account hidden.
 
    To go live: paste the hosted link for each price point below.
    Each link is created in the PayPal dashboard (no code, no email in the URL). */
