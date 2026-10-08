@@ -8,11 +8,11 @@
 window.UH_PAY = {
   // Hosted checkout links — safe to publish. Empty => falls back to email enquiry.
   links: {
-    'ad-starter':       '',   // $9/mo   (YouTube channel / small ad)
-    'ad-growth':        '',   // $29/mo
-    'ad-pro':           '',   // $79/mo
-    'premium-pro':      '',   // ~$3.49/mo  (₹299, charged in USD)
-    'premium-business': ''    // ~$11.49/mo (₹999, charged in USD)
+    'ad-starter':       'https://www.paypal.com/ncp/payment/NP864JMQXQX2Q',   // $9.00/mo   — Channel Starter
+    'ad-growth':        'https://www.paypal.com/ncp/payment/7WEHAKASGNSFQ',   // $29.00/mo  — Channel Growth
+    'ad-pro':           'https://www.paypal.com/ncp/payment/S5LZRGXT64668',   // $79.00/mo  — Channel Pro
+    'premium-pro':      'https://www.paypal.com/ncp/payment/EFNTLJ8FGHBCS',   // $3.49/mo   — Premium Pro (₹299)
+    'premium-business': 'https://www.paypal.com/ncp/payment/BTBKJD5U59ZR4'    // $11.49/mo  — Premium Business (₹999)
   },
 
   // Display-only: shown to Indian visitors so they know the USD charge.
