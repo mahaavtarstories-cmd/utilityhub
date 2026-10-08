@@ -20,6 +20,7 @@
       'background:#0f0f0f;color:#fff;border-top:2px solid #ff0000;',
       'font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;',
       'box-shadow:0 -3px 14px rgba(0,0,0,.24);}',
+      'body{padding-bottom:44px;}',
       '#uh-yt-promo .uh-yt-in{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:8px;',
       'padding:5px 14px;}',
       '#uh-yt-promo a.uh-yt-link{display:flex;align-items:center;gap:8px;color:#fff;text-decoration:none;',
