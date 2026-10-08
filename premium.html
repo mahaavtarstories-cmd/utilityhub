@@ -205,12 +205,15 @@
 
     function subscribe(plan) {
       var P = window.UH_PAY || {};
-      var priceINR = { pro: '299', business: '999' }[plan] || '299';
-      var label = 'UtilityHub ' + plan + ' (\u20B9' + priceINR + '/mo)';
-      if (P.inr && P.inr()) {
-        window.location.href = P.inr();
+      var inr = { pro: '299', business: '999' }[plan] || '299';
+      var key = plan === 'business' ? 'premium-business' : 'premium-pro';
+      var link = P.link ? P.link(key) : '';
+      if (link) {
+        window.location.href = link;
       } else {
-        window.location.href = 'mailto:services@utilityshub.com?subject=' + encodeURIComponent('Premium ' + plan) + '&body=' + encodeURIComponent('Hi, I want to subscribe: ' + label + '. Please send a payment link (UPI / Razorpay / PayPal).');
+        var usd = P.usdFromInr ? P.usdFromInr(inr) : '';
+        var label = 'UtilityHub Premium ' + plan + ' (\u20B9' + inr + (usd ? ' / $' + usd : '') + ' per month, billed in USD)';
+        window.location.href = 'mailto:services@utilityshub.com?subject=' + encodeURIComponent('Premium ' + plan) + '&body=' + encodeURIComponent('Hi, I want to subscribe: ' + label + '. Please send a payment link.\n\nName:\nEmail:\n');
       }
       trackEvent('subscription', 'initiate', plan);
     }

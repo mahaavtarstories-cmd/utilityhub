@@ -110,7 +110,7 @@
         <li class="off">Homepage priority placement</li>
         <li class="off">Banner / sponsored post</li>
       </ul>
-      <button class="btn-plan secondary" data-amt="9" data-name="Advertise - Starter (monthly)" onclick="advPay(this)">Choose Starter →</button>
+      <button class="btn-plan secondary" data-key="ad-starter" data-amt="9" data-name="Advertise - Starter (monthly)" onclick="advPay(this)">Choose Starter →</button>
     </div>
 
     <!-- Growth (popular) -->
@@ -126,7 +126,7 @@
         <li>Monthly performance report</li>
         <li class="off">Dedicated sponsored blog post</li>
       </ul>
-      <button class="btn-plan primary" data-amt="29" data-name="Advertise - Growth (monthly)" onclick="advPay(this)">Choose Growth →</button>
+      <button class="btn-plan primary" data-key="ad-growth" data-amt="29" data-name="Advertise - Growth (monthly)" onclick="advPay(this)">Choose Growth →</button>
     </div>
 
     <!-- Pro -->
@@ -142,7 +142,7 @@
         <li>Weekly click &amp; impression stats</li>
         <li>Custom landing link / UTM tracking</li>
       </ul>
-      <button class="btn-plan secondary" data-amt="79" data-name="Advertise - Pro (monthly)" onclick="advPay(this)">Choose Pro →</button>
+      <button class="btn-plan secondary" data-key="ad-pro" data-amt="79" data-name="Advertise - Pro (monthly)" onclick="advPay(this)">Choose Pro →</button>
     </div>
   </div>
 
@@ -204,13 +204,15 @@
     });
     function advPay(btn) {
       var P = window.UH_PAY || {};
+      var key = btn.getAttribute('data-key');
       var amt = btn.getAttribute('data-amt');
       var name = btn.getAttribute('data-name');
-      if (P.monthly && P.isLive && P.isLive() && P.paypalEmail) {
-        window.location.href = P.monthly(amt, name);
+      var link = P.link ? P.link(key) : '';
+      if (link) {
+        window.location.href = link;
         if (window.gtag) gtag('event', 'ad_purchase', { event_category: 'advertise', event_label: name });
       } else {
-        window.location.href = 'mailto:services@utilityshub.com?subject=' + encodeURIComponent(name) + '&body=' + encodeURIComponent('Hi, I want to book: ' + name + ' ($' + amt + '/mo). Please send a payment link.\n\nChannel/Brand:\nWebsite/Channel URL:\n');
+        window.location.href = 'mailto:services@utilityshub.com?subject=' + encodeURIComponent(name) + '&body=' + encodeURIComponent('Hi, I want to book: ' + name + ' ($' + amt + '/mo, billed in USD). Please send a payment link.\n\nChannel/Brand:\nWebsite/Channel URL:\n');
       }
     }
   </script>

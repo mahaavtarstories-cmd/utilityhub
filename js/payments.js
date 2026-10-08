@@ -1,55 +1,40 @@
-/* UtilityHub — Payments config + link builders.
-   No API keys needed: PayPal hosted checkout works from the business email/handle.
-   Fill PAYPAL below to go live; while empty, callers fall back to enquiry/alert. */
+/* UtilityHub — Payments config (PUBLIC-SAFE).
+   ⚠️ Never place an email, API key, or secret in this file: it is served publicly
+   and the repository is public. Use PayPal *hosted* payment links / buttons
+   (or a Razorpay payment page) only — those keep the receiving account hidden.
+
+   To go live: paste the hosted link for each price point below.
+   Each link is created in the PayPal dashboard (no code, no email in the URL). */
 window.UH_PAY = {
-  // ---- Set these to go live ----
-  // PayPal business email (the account that receives money — e.g. Anant Infotech):
-  paypalEmail: '',
-  // Optional PayPal.me handle (e.g. 'AnantInfotech'): used for simple tip-style links
-  paypalMe: '',
-  // Optional INR option (Razorpay/UPI payment-page URL) for domestic premium:
-  inrLink: '',
-  // Where PayPal sends the buyer back after paying:
-  returnUrl: 'https://utilityshub.com/premium.html?paid=1',
-  cancelUrl: 'https://utilityshub.com/premium.html?canceled=1',
-
-  // ---- Helpers ----
-  isLive: function () { return !!(this.paypalEmail || this.paypalMe || this.inrLink); },
-
-  // One-time payment link (USD)
-  oneTime: function (amountUSD, itemName) {
-    if (this.paypalMe) {
-      return 'https://www.paypal.com/paypalme/' + this.paypalMe + '/' + amountUSD + 'USD';
-    }
-    if (!this.paypalEmail) return '';
-    return 'https://www.paypal.com/cgi-bin/webscr'
-      + '?cmd=_xclick'
-      + '&business=' + encodeURIComponent(this.paypalEmail)
-      + '&item_name=' + encodeURIComponent(itemName || 'UtilityHub payment')
-      + '&amount=' + encodeURIComponent(amountUSD)
-      + '&currency_code=USD'
-      + '&no_shipping=1'
-      + '&return=' + encodeURIComponent(this.returnUrl)
-      + '&cancel_return=' + encodeURIComponent(this.cancelUrl);
+  // Hosted checkout links — safe to publish. Empty => falls back to email enquiry.
+  links: {
+    'ad-starter':       '',   // $9/mo   (YouTube channel / small ad)
+    'ad-growth':        '',   // $29/mo
+    'ad-pro':           '',   // $79/mo
+    'premium-pro':      '',   // ~$3.49/mo  (₹299, charged in USD)
+    'premium-business': ''    // ~$11.49/mo (₹999, charged in USD)
   },
 
-  // Recurring monthly subscription link (USD). Requires a PayPal business account;
-  // buyer can pay with card or PayPal. No API keys needed.
-  monthly: function (amountUSD, itemName) {
-    if (!this.paypalEmail) return '';
-    return 'https://www.paypal.com/cgi-bin/webscr'
-      + '?cmd=_xclick-subscriptions'
-      + '&business=' + encodeURIComponent(this.paypalEmail)
-      + '&item_name=' + encodeURIComponent(itemName || 'UtilityHub subscription')
-      + '&a3=' + encodeURIComponent(amountUSD)          // amount
-      + '&p3=1&t3=M'                                    // every 1 Month
-      + '&src=1&sra=1'                                  // reattempt on failure
-      + '&currency_code=USD'
-      + '&no_shipping=1'
-      + '&return=' + encodeURIComponent(this.returnUrl)
-      + '&cancel_return=' + encodeURIComponent(this.cancelUrl);
+  // Display-only: shown to Indian visitors so they know the USD charge.
+  // PayPal India settles international payments in USD -> auto-converted to INR.
+  fx: { inrPerUsd: 86 },
+
+  // Returns a usable hosted link for a price key, or '' when not configured.
+  link: function (key) {
+    var u = (this.links || {})[key];
+    return (u && u.indexOf('http') === 0) ? u : '';
   },
 
-  // INR (domestic) — a hosted payment-page link (Razorpay/UPI); no keys here.
-  inr: function () { return this.inrLink; }
+  // True when at least one hosted link is set.
+  isLive: function () {
+    var L = this.links || {};
+    for (var k in L) { if (L[k]) return true; }
+    return false;
+  },
+
+  // ₹ -> $ display conversion (e.g. 299 => "3.49")
+  usdFromInr: function (inr) {
+    var r = (this.fx && this.fx.inrPerUsd) || 86;
+    return (Number(inr) / r).toFixed(2);
+  }
 };
