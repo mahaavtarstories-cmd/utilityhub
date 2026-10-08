@@ -319,7 +319,9 @@ body {
 
 .about p {
   color: var(--text-muted);
-  max-width: 600px;
+  max-width: 100%;
+  font-size: 1.05rem;
+  line-height: 1.7;
 }
 
 /* ===== Footer ===== */
