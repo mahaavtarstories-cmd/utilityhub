@@ -70,7 +70,7 @@
             '</div>' +
             '<a class="uh-spot-btn" href="' + a.url + '" target="_blank" rel="noopener sponsored">' + (a.cta || 'Subscribe') + ' →</a>' +
           '</div>' +
-          '<div class="uh-spot-foot"><a href="mailto:services@utilityshub.com?subject=Advertise%20my%20channel%20on%20UtilityHub">Advertise your channel here →</a></div>' +
+          '<div class="uh-spot-foot"><a href="/advertise.html">Advertise your channel here →</a></div>' +
         '</div>';
     }
 

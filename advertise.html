@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advertise — UtilityHub</title>
+  <meta name="description" content="Advertise your channel, product, or service on UtilityHub. Simple monthly plans in USD — featured channel slots, homepage banners, and sponsored posts.">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .adv-hero { text-align:center; padding:56px 20px 36px; background:linear-gradient(135deg,#0f0f0f 0%,#2b2b2b 100%); color:#fff; }
+    .adv-hero h1 { font-size:2.4rem; font-weight:800; margin-bottom:10px; }
+    .adv-hero p { font-size:1.1rem; opacity:.88; max-width:640px; margin:0 auto; }
+    .adv-hero .adv-badges { margin-top:18px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+    .adv-hero .adv-badges span { background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18); padding:6px 14px; border-radius:999px; font-size:.8rem; }
+    .plans { max-width:1080px; margin:44px auto; padding:0 20px; display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+    @media(max-width:820px){ .plans{ grid-template-columns:1fr; } }
+    .plan { background:#fff; border:1px solid var(--border); border-radius:16px; padding:30px; box-shadow:var(--shadow); position:relative; display:flex; flex-direction:column; }
+    .plan.popular { border-color:var(--primary); border-width:2px; box-shadow:0 6px 24px rgba(99,102,241,.16); }
+    .plan.popular::before { content:'Most Popular'; position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--primary); color:#fff; padding:4px 14px; border-radius:20px; font-size:.72rem; font-weight:700; letter-spacing:.3px; }
+    .plan-tier { font-size:.8rem; font-weight:700; color:var(--primary); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px; }
+    .plan-price { font-size:2.5rem; font-weight:800; line-height:1; }
+    .plan-price small { font-size:.95rem; font-weight:600; color:var(--text-muted); }
+    .plan-period { font-size:.85rem; color:var(--text-muted); margin:6px 0 18px; }
+    .plan ul { list-style:none; padding:0; margin:0 0 24px; flex:1; }
+    .plan li { padding:7px 0; font-size:.9rem; display:flex; gap:8px; align-items:flex-start; }
+    .plan li::before { content:'✓'; color:var(--success); font-weight:800; }
+    .plan li.off { color:#cbd5e1; }
+    .plan li.off::before { content:'✗'; color:#e2e8f0; }
+    .btn-plan { width:100%; padding:13px; border:none; border-radius:9px; font-size:.95rem; font-weight:700; cursor:pointer; text-decoration:none; text-align:center; display:block; }
+    .btn-plan.primary { background:var(--primary); color:#fff; }
+    .btn-plan.primary:hover { background:var(--primary-dark); }
+    .btn-plan.secondary { background:#f1f5f9; color:var(--text); }
+    .btn-plan.secondary:hover { background:#e2e8f0; }
+    .addons { max-width:1080px; margin:0 auto 44px; padding:0 20px; }
+    .addons h2 { font-size:1.5rem; font-weight:800; margin-bottom:6px; }
+    .addons p.sub { color:var(--text-muted); margin-bottom:18px; }
+    .addon-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; }
+    .addon { background:#fff; border:1px solid var(--border); border-radius:12px; padding:18px; }
+    .addon .a-price { float:right; font-weight:800; color:var(--primary); }
+    .addon h4 { font-size:.95rem; font-weight:700; margin-bottom:4px; }
+    .addon p { font-size:.82rem; color:var(--text-muted); margin:0; }
+    .why { background:var(--card); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:44px 20px; }
+    .why-in { max-width:1000px; margin:0 auto; }
+    .why h2 { font-size:1.5rem; font-weight:800; margin-bottom:18px; text-align:center; }
+    .why-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:18px; }
+    .why-card { background:#fff; border:1px solid var(--border); border-radius:12px; padding:18px; }
+    .why-card .ic { font-size:1.5rem; margin-bottom:8px; }
+    .why-card h4 { font-size:.95rem; font-weight:700; margin-bottom:4px; }
+    .why-card p { font-size:.83rem; color:var(--text-muted); margin:0; }
+    .faq { max-width:720px; margin:0 auto; padding:44px 20px; }
+    .faq h2 { font-size:1.5rem; font-weight:800; margin-bottom:14px; }
+    .faq-item { border-bottom:1px solid var(--border); padding:15px 0; }
+    .faq-item h3 { font-size:1rem; font-weight:600; cursor:pointer; }
+    .faq-item p { font-size:.9rem; color:var(--text-muted); margin-top:8px; display:none; }
+    .faq-item.open p { display:block; }
+    .adv-cta { text-align:center; padding:40px 20px 56px; }
+    .adv-cta h2 { font-size:1.5rem; font-weight:800; margin-bottom:8px; }
+    .adv-cta p { color:var(--text-muted); margin-bottom:18px; }
+    .adv-cta a { display:inline-block; padding:14px 30px; background:var(--primary); color:#fff; border-radius:10px; text-decoration:none; font-weight:700; }
+  </style>
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5CYNY8GBN0"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-5CYNY8GBN0');
+  </script>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="logo"><span class="logo-icon">⚙️</span><span class="logo-text">Utility<strong>Hub</strong></span></a>
+      <nav class="nav">
+        <a href="/" class="nav-link">Tools</a>
+        <a href="/services.html" class="nav-link">Services</a>
+        <a href="/premium.html" class="nav-link">Premium</a>
+        <a href="/advertise.html" class="nav-link" style="color:var(--primary);font-weight:600;">Advertise</a>
+        <a href="/#about" class="nav-link">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="adv-hero">
+    <h1>Advertise on UtilityHub</h1>
+    <p>Put your YouTube channel, product, or service in front of utility-tool users every day. Simple monthly plans — billed in USD.</p>
+    <div class="adv-badges">
+      <span>26+ free tools</span>
+      <span>30+ currencies</span>
+      <span>Site-wide placement</span>
+      <span>Cancel anytime</span>
+    </div>
+  </section>
+
+  <div class="plans">
+    <!-- Starter -->
+    <div class="plan">
+      <div class="plan-tier">Starter</div>
+      <div class="plan-price">$9<small>/mo</small></div>
+      <div class="plan-period">Best for creators &amp; small channels</div>
+      <ul>
+        <li>1 Featured Channel slot (rotating pool)</li>
+        <li>Your channel/video on site pages</li>
+        <li>Text + link + subscribe button</li>
+        <li>Basic click count</li>
+        <li class="off">Homepage priority placement</li>
+        <li class="off">Banner / sponsored post</li>
+      </ul>
+      <a class="btn-plan secondary" href="mailto:services@utilityshub.com?subject=Advertise%20-%20Starter%20%289%2Fmo%29">Choose Starter →</a>
+    </div>
+
+    <!-- Growth (popular) -->
+    <div class="plan popular">
+      <div class="plan-tier">Growth</div>
+      <div class="plan-price">$29<small>/mo</small></div>
+      <div class="plan-period">Best for growing brands &amp; stores</div>
+      <ul>
+        <li>Everything in Starter</li>
+        <li>Homepage “Featured Channel” spotlight</li>
+        <li>Priority rotation in the shared pool</li>
+        <li>Channel banner ad on tool pages</li>
+        <li>Monthly performance report</li>
+        <li class="off">Dedicated sponsored blog post</li>
+      </ul>
+      <a class="btn-plan primary" href="mailto:services@utilityshub.com?subject=Advertise%20-%20Growth%20%2829%2Fmo%29">Choose Growth →</a>
+    </div>
+
+    <!-- Pro -->
+    <div class="plan">
+      <div class="plan-tier">Pro</div>
+      <div class="plan-price">$79<small>/mo</small></div>
+      <div class="plan-period">Best for businesses &amp; agencies</div>
+      <ul>
+        <li>Everything in Growth</li>
+        <li>Priority #1 placement (top of every slot)</li>
+        <li>Homepage hero banner + spotlight + in-content</li>
+        <li>1 sponsored blog post / month (written &amp; published)</li>
+        <li>Weekly click &amp; impression stats</li>
+        <li>Custom landing link / UTM tracking</li>
+      </ul>
+      <a class="btn-plan secondary" href="mailto:services@utilityshub.com?subject=Advertise%20-%20Pro%20%2879%2Fmo%29">Choose Pro →</a>
+    </div>
+  </div>
+
+  <div class="addons">
+    <h2>À la carte add-ons</h2>
+    <p class="sub">One-off placements — mix and match with any plan.</p>
+    <div class="addon-grid">
+      <div class="addon"><span class="a-price">$49<span style="font-size:.7rem;font-weight:600;color:var(--text-muted)">/wk</span></span><h4>Homepage hero banner</h4><p>Large banner at the top of the homepage for 7 days.</p></div>
+      <div class="addon"><span class="a-price">$39</span><h4>Sponsored blog post</h4><p>We write &amp; publish a post featuring your brand, with links.</p></div>
+      <div class="addon"><span class="a-price">$19<span style="font-size:.7rem;font-weight:600;color:var(--text-muted)">/mo</span></span><h4>In-content ad block</h4><p>Ad block inside a specific tool or blog page.</p></div>
+      <div class="addon"><span class="a-price">$25</span><h4>Email mention</h4><p>Featured mention in one of our notification emails.</p></div>
+    </div>
+  </div>
+
+  <section class="why">
+    <div class="why-in">
+      <h2>Why advertise here</h2>
+      <div class="why-grid">
+        <div class="why-card"><div class="ic">🎯</div><h4>Ready-to-act audience</h4><p>People already using calculators — finance, salary, tax, PDF &amp; image tools.</p></div>
+        <div class="why-card"><div class="ic">🔁</div><h4>Repeat visits</h4><p>Utility tools get used again and again, so your ad keeps getting seen.</p></div>
+        <div class="why-card"><div class="ic">📱</div><h4>Every device</h4><p>Responsive placements on desktop and mobile.</p></div>
+        <div class="why-card"><div class="ic">🧾</div><h4>Simple flat pricing</h4><p>No bidding, no hidden fees. One flat monthly rate in USD.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="faq">
+    <h2>Questions</h2>
+    <div class="faq-item"><h3>How do I pay?</h3><p>We invoice in USD. Pay by card, PayPal, or bank transfer. Campaign goes live once payment is confirmed.</p></div>
+    <div class="faq-item"><h3>Can I advertise my YouTube channel?</h3><p>Yes — that is our most popular slot. Send your channel name, handle, tagline, and a link. We publish it in the Featured Channel box.</p></div>
+    <div class="faq-item"><h3>How fast does it go live?</h3><p>Usually within 24 hours of confirmed payment. Pro campaigns with a blog post can take 2–3 days.</p></div>
+    <div class="faq-item"><h3>Do you offer CPM / pay-per-click?</h3><p>Plans are flat-rate. For larger campaigns (100k+ impressions) we can quote a custom CPM — just ask.</p></div>
+    <div class="faq-item"><h3>Can I cancel anytime?</h3><p>Yes. Monthly plans are month-to-month with no lock-in.</p></div>
+  </div>
+
+  <div class="adv-cta">
+    <h2>Ready to get featured?</h2>
+    <p>Tell us which plan you want — we'll confirm availability and send an invoice.</p>
+    <a href="mailto:services@utilityshub.com?subject=Advertise%20on%20UtilityHub">Book a slot →</a>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-links">
+        <a href="/">All Tools</a>
+        <a href="/services.html">Services</a>
+        <a href="/premium.html">Premium</a>
+        <a href="/advertise.html">Advertise</a>
+        <a href="/#about">About</a>
+        <a href="mailto:services@utilityshub.com">Contact</a>
+      </div>
+      <p>&copy; 2026 UtilityHub. Free tools, forever. ⚡</p>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.faq-item h3').forEach(function (h) {
+      h.addEventListener('click', function () { h.parentElement.classList.toggle('open'); });
+    });
+  </script>
+  <script src="js/youtube-promo.js"></script>
+</body>
+</html>
